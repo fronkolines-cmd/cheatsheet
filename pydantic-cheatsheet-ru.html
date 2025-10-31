@@ -20,10 +20,39 @@
         .code-block:hover .copy-btn {
             opacity: 1;
         }
+        
+        #toc {
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        
+        #toc::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #toc::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        
+        #toc::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        
+        #toc::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        
+        @media (max-width: 1024px) {
+            #toc {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
         <header class="mb-12 text-center">
             <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
                 PyDantic Шпаргалка
@@ -63,65 +92,66 @@
             </div>
         </section>
 
-        <nav id="toc" class="mb-12 bg-slate-800 rounded-lg p-6 shadow-xl sticky top-4 z-10">
-            <h2 class="text-2xl font-bold mb-4 text-purple-400">📚 Оглавление</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
-                <div>
-                    <h3 class="font-semibold text-blue-300 mb-2">Основы</h3>
-                    <ul class="space-y-1">
-                        <li><a href="#section-1" class="text-gray-400 hover:text-blue-400 transition">1. Установка</a></li>
-                        <li><a href="#section-2" class="text-gray-400 hover:text-blue-400 transition">2. Базовые типы</a></li>
-                        <li><a href="#section-3" class="text-gray-400 hover:text-blue-400 transition">3. Создание моделей</a></li>
-                        <li><a href="#section-4" class="text-gray-400 hover:text-blue-400 transition">4. Field</a></li>
-                        <li><a href="#section-5" class="text-gray-400 hover:text-blue-400 transition">5. Значения по умолчанию</a></li>
-                        <li><a href="#section-6" class="text-gray-400 hover:text-blue-400 transition">6. Computed Fields</a></li>
-                        <li><a href="#section-7" class="text-gray-400 hover:text-blue-400 transition">7. Private Attributes</a></li>
-                        <li><a href="#section-8" class="text-gray-400 hover:text-blue-400 transition">8. Config опции</a></li>
-                        <li><a href="#section-9" class="text-gray-400 hover:text-blue-400 transition">9. Обработка ошибок</a></li>
-                        <li><a href="#section-10" class="text-gray-400 hover:text-blue-400 transition">10. Парсинг типов</a></li>
-                    </ul>
+        <div class="flex gap-8">
+            <nav id="toc" class="bg-slate-800 rounded-lg p-4 shadow-xl sticky top-4 self-start" style="width: 280px; max-height: calc(100vh - 2rem); overflow-y: auto;">
+                <h2 class="text-xl font-bold mb-4 text-purple-400">📚 Оглавление</h2>
+                <div class="space-y-4 text-sm">
+                    <div>
+                        <h3 class="font-semibold text-blue-300 mb-2">Основы</h3>
+                        <ul class="space-y-1">
+                            <li><a href="#section-1" class="text-gray-400 hover:text-blue-400 transition">1. Установка</a></li>
+                            <li><a href="#section-2" class="text-gray-400 hover:text-blue-400 transition">2. Базовые типы</a></li>
+                            <li><a href="#section-3" class="text-gray-400 hover:text-blue-400 transition">3. Создание моделей</a></li>
+                            <li><a href="#section-4" class="text-gray-400 hover:text-blue-400 transition">4. Field</a></li>
+                            <li><a href="#section-5" class="text-gray-400 hover:text-blue-400 transition">5. Значения по умолчанию</a></li>
+                            <li><a href="#section-6" class="text-gray-400 hover:text-blue-400 transition">6. Computed Fields</a></li>
+                            <li><a href="#section-7" class="text-gray-400 hover:text-blue-400 transition">7. Private Attributes</a></li>
+                            <li><a href="#section-8" class="text-gray-400 hover:text-blue-400 transition">8. Config опции</a></li>
+                            <li><a href="#section-9" class="text-gray-400 hover:text-blue-400 transition">9. Обработка ошибок</a></li>
+                            <li><a href="#section-10" class="text-gray-400 hover:text-blue-400 transition">10. Парсинг типов</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-green-300 mb-2">Валидация</h3>
+                        <ul class="space-y-1">
+                            <li><a href="#section-11" class="text-gray-400 hover:text-green-400 transition">11. field_validator</a></li>
+                            <li><a href="#section-12" class="text-gray-400 hover:text-green-400 transition">12. model_validator</a></li>
+                            <li><a href="#section-13" class="text-gray-400 hover:text-green-400 transition">13. Режимы mode</a></li>
+                            <li><a href="#section-14" class="text-gray-400 hover:text-green-400 transition">14. ValidationInfo</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-yellow-300 mb-2">Работа с данными</h3>
+                        <ul class="space-y-1">
+                            <li><a href="#section-15" class="text-gray-400 hover:text-yellow-400 transition">15. Сериализация</a></li>
+                            <li><a href="#section-16" class="text-gray-400 hover:text-yellow-400 transition">16. Alias</a></li>
+                            <li><a href="#section-17" class="text-gray-400 hover:text-yellow-400 transition">17. Конфигурация</a></li>
+                            <li><a href="#section-18" class="text-gray-400 hover:text-yellow-400 transition">18. Enum</a></li>
+                            <li><a href="#section-19" class="text-gray-400 hover:text-yellow-400 transition">19. Динамические поля</a></li>
+                            <li><a href="#section-20" class="text-gray-400 hover:text-yellow-400 transition">20. Наследование</a></li>
+                            <li><a href="#section-21" class="text-gray-400 hover:text-yellow-400 transition">21. Вложенные модели</a></li>
+                            <li><a href="#section-22" class="text-gray-400 hover:text-yellow-400 transition">22. UUID и типы</a></li>
+                            <li><a href="#section-23" class="text-gray-400 hover:text-yellow-400 transition">23. Даты и время</a></li>
+                            <li><a href="#section-24" class="text-gray-400 hover:text-yellow-400 transition">24. Пользовательские ошибки</a></li>
+                            <li><a href="#section-25" class="text-gray-400 hover:text-yellow-400 transition">25. Интеграция с БД</a></li>
+                            <li><a href="#section-26" class="text-gray-400 hover:text-yellow-400 transition">26. Условная валидация</a></li>
+                            <li><a href="#section-27" class="text-gray-400 hover:text-yellow-400 transition">27. Версионирование</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-purple-300 mb-2">Продвинутое</h3>
+                        <ul class="space-y-1">
+                            <li><a href="#section-28" class="text-gray-400 hover:text-purple-400 transition">28. Производительность</a></li>
+                            <li><a href="#section-29" class="text-gray-400 hover:text-purple-400 transition">29. Контекст</a></li>
+                            <li><a href="#section-30" class="text-gray-400 hover:text-purple-400 transition">30. Кастомные типы</a></li>
+                            <li><a href="#section-31" class="text-gray-400 hover:text-purple-400 transition">31. JSON Schema</a></li>
+                            <li><a href="#section-32" class="text-gray-400 hover:text-purple-400 transition">32. None значения</a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="font-semibold text-green-300 mb-2">Валидация</h3>
-                    <ul class="space-y-1">
-                        <li><a href="#section-11" class="text-gray-400 hover:text-green-400 transition">11. field_validator</a></li>
-                        <li><a href="#section-12" class="text-gray-400 hover:text-green-400 transition">12. model_validator</a></li>
-                        <li><a href="#section-13" class="text-gray-400 hover:text-green-400 transition">13. Режимы mode</a></li>
-                        <li><a href="#section-14" class="text-gray-400 hover:text-green-400 transition">14. ValidationInfo</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-yellow-300 mb-2">Работа с данными</h3>
-                    <ul class="space-y-1">
-                        <li><a href="#section-15" class="text-gray-400 hover:text-yellow-400 transition">15. Сериализация</a></li>
-                        <li><a href="#section-16" class="text-gray-400 hover:text-yellow-400 transition">16. Alias</a></li>
-                        <li><a href="#section-17" class="text-gray-400 hover:text-yellow-400 transition">17. Конфигурация</a></li>
-                        <li><a href="#section-18" class="text-gray-400 hover:text-yellow-400 transition">18. Enum</a></li>
-                        <li><a href="#section-19" class="text-gray-400 hover:text-yellow-400 transition">19. Динамические поля</a></li>
-                        <li><a href="#section-20" class="text-gray-400 hover:text-yellow-400 transition">20. Наследование</a></li>
-                        <li><a href="#section-21" class="text-gray-400 hover:text-yellow-400 transition">21. Вложенные модели</a></li>
-                        <li><a href="#section-22" class="text-gray-400 hover:text-yellow-400 transition">22. UUID и типы</a></li>
-                        <li><a href="#section-23" class="text-gray-400 hover:text-yellow-400 transition">23. Даты и время</a></li>
-                        <li><a href="#section-24" class="text-gray-400 hover:text-yellow-400 transition">24. Пользовательские ошибки</a></li>
-                        <li><a href="#section-25" class="text-gray-400 hover:text-yellow-400 transition">25. Интеграция с БД</a></li>
-                        <li><a href="#section-26" class="text-gray-400 hover:text-yellow-400 transition">26. Условная валидация</a></li>
-                        <li><a href="#section-27" class="text-gray-400 hover:text-yellow-400 transition">27. Версионирование</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-purple-300 mb-2">Продвинутое</h3>
-                    <ul class="space-y-1">
-                        <li><a href="#section-28" class="text-gray-400 hover:text-purple-400 transition">28. Производительность</a></li>
-                        <li><a href="#section-29" class="text-gray-400 hover:text-purple-400 transition">29. Контекст</a></li>
-                        <li><a href="#section-30" class="text-gray-400 hover:text-purple-400 transition">30. Кастомные типы</a></li>
-                        <li><a href="#section-31" class="text-gray-400 hover:text-purple-400 transition">31. JSON Schema</a></li>
-                        <li><a href="#section-32" class="text-gray-400 hover:text-purple-400 transition">32. None значения</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+            </nav>
 
-        <main class="space-y-8">
+            <main class="flex-1 space-y-8">
             <section id="section-1" class="bg-slate-800 rounded-lg p-6 shadow-xl">
                 <h2 class="text-3xl font-bold mb-4 text-blue-400">1. Установка и импорт</h2>
                 <p class="text-gray-300 mb-4">
@@ -3379,7 +3409,8 @@ print(data2)  # {'email': None}</code></pre>
                     </ul>
                 </div>
             </section>
-        </main>
+            </main>
+        </div>
 
         <footer class="mt-16 text-center text-gray-500 pb-8">
             <p class="text-sm">
