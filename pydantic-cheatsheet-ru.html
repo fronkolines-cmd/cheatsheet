@@ -1,0 +1,3463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyDantic - Шпаргалка</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        .copy-btn {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block:hover .copy-btn {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="mb-12 text-center">
+            <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                PyDantic Шпаргалка
+            </h1>
+            <p class="text-xl text-gray-400">Полное руководство по валидации данных в Python</p>
+        </header>
+
+        <section id="quick-reference" class="mb-12 bg-slate-800 rounded-lg p-6 shadow-xl">
+            <h2 class="text-3xl font-bold mb-6 text-blue-400">📋 Быстрый справочник</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="py-3 px-4 text-blue-300">Категория</th>
+                            <th class="py-3 px-4 text-blue-300">Разделы</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-300">
+                        <tr class="border-b border-gray-700/50">
+                            <td class="py-3 px-4 font-semibold">Основы (1-10)</td>
+                            <td class="py-3 px-4">Установка, типы данных, модели, Field, значения по умолчанию</td>
+                        </tr>
+                        <tr class="border-b border-gray-700/50">
+                            <td class="py-3 px-4 font-semibold">Валидация (11-14)</td>
+                            <td class="py-3 px-4">field_validator, model_validator, режимы before/after, ValidationInfo</td>
+                        </tr>
+                        <tr class="border-b border-gray-700/50">
+                            <td class="py-3 px-4 font-semibold">Данные (15-27)</td>
+                            <td class="py-3 px-4">Сериализация, alias, конфигурация, enum, наследование, UUID</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 font-semibold">Продвинутое (28-32)</td>
+                            <td class="py-3 px-4">Производительность, контекст, кастомные типы, JSON Schema</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <nav id="toc" class="mb-12 bg-slate-800 rounded-lg p-6 shadow-xl sticky top-4 z-10">
+            <h2 class="text-2xl font-bold mb-4 text-purple-400">📚 Оглавление</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
+                <div>
+                    <h3 class="font-semibold text-blue-300 mb-2">Основы</h3>
+                    <ul class="space-y-1">
+                        <li><a href="#section-1" class="text-gray-400 hover:text-blue-400 transition">1. Установка</a></li>
+                        <li><a href="#section-2" class="text-gray-400 hover:text-blue-400 transition">2. Базовые типы</a></li>
+                        <li><a href="#section-3" class="text-gray-400 hover:text-blue-400 transition">3. Создание моделей</a></li>
+                        <li><a href="#section-4" class="text-gray-400 hover:text-blue-400 transition">4. Field</a></li>
+                        <li><a href="#section-5" class="text-gray-400 hover:text-blue-400 transition">5. Значения по умолчанию</a></li>
+                        <li><a href="#section-6" class="text-gray-400 hover:text-blue-400 transition">6. Computed Fields</a></li>
+                        <li><a href="#section-7" class="text-gray-400 hover:text-blue-400 transition">7. Private Attributes</a></li>
+                        <li><a href="#section-8" class="text-gray-400 hover:text-blue-400 transition">8. Config опции</a></li>
+                        <li><a href="#section-9" class="text-gray-400 hover:text-blue-400 transition">9. Обработка ошибок</a></li>
+                        <li><a href="#section-10" class="text-gray-400 hover:text-blue-400 transition">10. Парсинг типов</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-green-300 mb-2">Валидация</h3>
+                    <ul class="space-y-1">
+                        <li><a href="#section-11" class="text-gray-400 hover:text-green-400 transition">11. field_validator</a></li>
+                        <li><a href="#section-12" class="text-gray-400 hover:text-green-400 transition">12. model_validator</a></li>
+                        <li><a href="#section-13" class="text-gray-400 hover:text-green-400 transition">13. Режимы mode</a></li>
+                        <li><a href="#section-14" class="text-gray-400 hover:text-green-400 transition">14. ValidationInfo</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-yellow-300 mb-2">Работа с данными</h3>
+                    <ul class="space-y-1">
+                        <li><a href="#section-15" class="text-gray-400 hover:text-yellow-400 transition">15. Сериализация</a></li>
+                        <li><a href="#section-16" class="text-gray-400 hover:text-yellow-400 transition">16. Alias</a></li>
+                        <li><a href="#section-17" class="text-gray-400 hover:text-yellow-400 transition">17. Конфигурация</a></li>
+                        <li><a href="#section-18" class="text-gray-400 hover:text-yellow-400 transition">18. Enum</a></li>
+                        <li><a href="#section-19" class="text-gray-400 hover:text-yellow-400 transition">19. Динамические поля</a></li>
+                        <li><a href="#section-20" class="text-gray-400 hover:text-yellow-400 transition">20. Наследование</a></li>
+                        <li><a href="#section-21" class="text-gray-400 hover:text-yellow-400 transition">21. Вложенные модели</a></li>
+                        <li><a href="#section-22" class="text-gray-400 hover:text-yellow-400 transition">22. UUID и типы</a></li>
+                        <li><a href="#section-23" class="text-gray-400 hover:text-yellow-400 transition">23. Даты и время</a></li>
+                        <li><a href="#section-24" class="text-gray-400 hover:text-yellow-400 transition">24. Пользовательские ошибки</a></li>
+                        <li><a href="#section-25" class="text-gray-400 hover:text-yellow-400 transition">25. Интеграция с БД</a></li>
+                        <li><a href="#section-26" class="text-gray-400 hover:text-yellow-400 transition">26. Условная валидация</a></li>
+                        <li><a href="#section-27" class="text-gray-400 hover:text-yellow-400 transition">27. Версионирование</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-purple-300 mb-2">Продвинутое</h3>
+                    <ul class="space-y-1">
+                        <li><a href="#section-28" class="text-gray-400 hover:text-purple-400 transition">28. Производительность</a></li>
+                        <li><a href="#section-29" class="text-gray-400 hover:text-purple-400 transition">29. Контекст</a></li>
+                        <li><a href="#section-30" class="text-gray-400 hover:text-purple-400 transition">30. Кастомные типы</a></li>
+                        <li><a href="#section-31" class="text-gray-400 hover:text-purple-400 transition">31. JSON Schema</a></li>
+                        <li><a href="#section-32" class="text-gray-400 hover:text-purple-400 transition">32. None значения</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main class="space-y-8">
+            <section id="section-1" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400">1. Установка и импорт</h2>
+                <p class="text-gray-300 mb-4">
+                    Pydantic - это библиотека для валидации данных и настроек с использованием аннотаций типов Python. 
+                    Она обеспечивает runtime проверку типов и автоматическое преобразование данных.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python"># Установка PyDantic
+pip install pydantic
+
+# Базовый импорт
+from pydantic import BaseModel, Field, ValidationError
+
+# Импорт типов
+from pydantic import EmailStr, HttpUrl, UUID4
+
+# Импорт валидаторов
+from pydantic import field_validator, model_validator</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Валидация входных данных API</li>
+                        <li>Парсинг конфигурационных файлов</li>
+                        <li>Работа с внешними API и их ответами</li>
+                        <li>Обеспечение типобезопасности в критичных участках кода</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-2" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400">2. Базовые типы данных</h2>
+                <p class="text-gray-300 mb-4">
+                    Pydantic поддерживает все стандартные типы Python и автоматически преобразует совместимые типы.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel
+from datetime import datetime, date
+from typing import List, Dict
+
+class DataTypes(BaseModel):
+    # Примитивные типы
+    name: str
+    age: int
+    height: float
+    is_active: bool
+    
+    # Коллекции
+    tags: List[str]
+    metadata: Dict[str, any]
+    
+    # Даты и время
+    birth_date: date
+    created_at: datetime
+    
+# Пример использования
+data = DataTypes(
+    name="Иван",
+    age="25",  # Автоматически преобразуется в int
+    height=1.75,
+    is_active="true",  # Преобразуется в bool
+    tags=["python", "pydantic"],
+    metadata={"role": "developer"},
+    birth_date="1998-05-15",
+    created_at="2024-01-15T10:30:00"
+)
+
+print(f"Возраст: {data.age}, тип: {type(data.age)}")  # int</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Автоматическое приведение типов из JSON или форм</li>
+                        <li>Валидация данных из ненадежных источников</li>
+                        <li>Документирование ожидаемой структуры данных</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-3" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400">3. Создание моделей</h2>
+                <p class="text-gray-300 mb-4">
+                    Модели в Pydantic создаются путем наследования от BaseModel. Каждое поле модели определяется с помощью аннотации типа.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+    age: int
+
+# Создание экземпляра из словаря
+user_data = {
+    "id": 1,
+    "name": "Алексей",
+    "email": "alex@example.com",
+    "age": 30
+}
+user = User(**user_data)
+
+# Создание с именованными параметрами
+user2 = User(
+    id=2,
+    name="Мария",
+    email="maria@example.com",
+    age=28
+)
+
+# Доступ к полям
+print(user.name)  # Алексей
+print(user.model_dump())  # Словарь всех полей
+
+# Валидация происходит автоматически
+try:
+    invalid_user = User(id="not_a_number", name="Test")
+except ValidationError as e:
+    print(e.errors())</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Определение схемы данных для API endpoints</li>
+                        <li>Создание DTO (Data Transfer Objects)</li>
+                        <li>Моделирование бизнес-сущностей</li>
+                        <li>Замена dataclasses с валидацией</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-4" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400">4. Работа с полями через Field</h2>
+                <p class="text-gray-300 mb-4">
+                    Field позволяет добавить метаданные, ограничения и документацию к полям модели.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field
+
+class Product(BaseModel):
+    id: int = Field(
+        description="Уникальный идентификатор продукта",
+        examples=[1, 2, 3]
+    )
+    name: str = Field(
+        min_length=1,
+        max_length=100,
+        description="Название продукта"
+    )
+    price: float = Field(
+        gt=0,  # greater than (больше чем)
+        le=1000000,  # less than or equal (меньше или равно)
+        description="Цена в рублях"
+    )
+    quantity: int = Field(
+        ge=0,  # greater than or equal (больше или равно)
+        description="Количество на складе"
+    )
+    rating: float = Field(
+        ge=0.0,
+        le=5.0,
+        description="Рейтинг от 0 до 5"
+    )
+
+# Пример использования
+product = Product(
+    id=1,
+    name="Ноутбук",
+    price=75000.50,
+    quantity=10,
+    rating=4.5
+)
+
+# Попытка создать невалидный продукт
+try:
+    invalid = Product(
+        id=2,
+        name="",  # Ошибка: min_length=1
+        price=-100,  # Ошибка: должно быть > 0
+        quantity=-5,  # Ошибка: должно быть >= 0
+        rating=6.0  # Ошибка: должно быть <= 5.0
+    )
+except ValidationError as e:
+    print(e)</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Добавление бизнес-правил валидации</li>
+                        <li>Ограничение диапазона значений</li>
+                        <li>Документирование полей для API схемы</li>
+                        <li>Валидация длины строк и размеров коллекций</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-5" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400">5. Значения по умолчанию и опциональные поля</h2>
+                <p class="text-gray-300 mb-4">
+                    Pydantic поддерживает различные способы определения значений по умолчанию и опциональных полей.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field
+from typing import Optional, List
+from datetime import datetime
+
+class Article(BaseModel):
+    # Обязательное поле
+    title: str
+    
+    # Простое значение по умолчанию
+    views: int = 0
+    
+    # Опциональное поле (может быть None)
+    subtitle: Optional[str] = None
+    
+    # Default factory для изменяемых объектов
+    tags: List[str] = Field(default_factory=list)
+    
+    # Callable как значение по умолчанию
+    created_at: datetime = Field(default_factory=datetime.now)
+    
+    # Field с default
+    status: str = Field(default="draft")
+    
+    # Optional с default
+    author: Optional[str] = Field(default="Аноним")
+
+# Минимальное создание
+article1 = Article(title="Python Tips")
+print(article1.views)  # 0
+print(article1.tags)  # []
+print(article1.author)  # Аноним
+
+# Полное создание
+article2 = Article(
+    title="Advanced Pydantic",
+    subtitle="Deep Dive",
+    views=100,
+    tags=["python", "tutorial"],
+    status="published",
+    author="Иван Петров"
+)
+
+# Важно: каждый экземпляр получает свой список
+article3 = Article(title="Test")
+article3.tags.append("test")
+article4 = Article(title="Test2")
+print(len(article4.tags))  # 0 (не затронут)</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Optional - для полей, которые могут отсутствовать</li>
+                        <li>default_factory - для списков, словарей и других изменяемых объектов</li>
+                        <li>Field(default=...) - для статических значений по умолчанию</li>
+                        <li>Callable defaults - для динамических значений (timestamp, UUID)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-6" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400">6. Computed Fields (вычисляемые поля)</h2>
+                <p class="text-gray-300 mb-4">
+                    Computed fields позволяют добавлять вычисляемые свойства к моделям, которые будут включены в сериализацию.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, computed_field
+
+class Rectangle(BaseModel):
+    width: float
+    height: float
+    
+    @computed_field
+    @property
+    def area(self) -> float:
+        return self.width * self.height
+    
+    @computed_field
+    @property
+    def perimeter(self) -> float:
+        return 2 * (self.width + self.height)
+
+rect = Rectangle(width=10, height=5)
+print(rect.area)  # 50.0
+print(rect.perimeter)  # 30.0
+
+# Computed fields включаются в сериализацию
+print(rect.model_dump())
+# {'width': 10.0, 'height': 5.0, 'area': 50.0, 'perimeter': 30.0}
+
+class User(BaseModel):
+    first_name: str
+    last_name: str
+    
+    @computed_field
+    @property
+    def full_name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
+
+user = User(first_name="Иван", last_name="Петров")
+print(user.full_name)  # Иван Петров
+print(user.model_dump_json())  # Включает full_name</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Вычисление производных значений (площадь, периметр)</li>
+                        <li>Форматирование данных (full_name из first/last)</li>
+                        <li>Добавление вычисляемых полей в API responses</li>
+                        <li>Агрегация данных из нескольких полей</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-7" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400">7. Private Attributes (приватные атрибуты)</h2>
+                <p class="text-gray-300 mb-4">
+                    Приватные атрибуты не участвуют в валидации и сериализации, но могут быть использованы для внутренней логики.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, PrivateAttr
+from datetime import datetime
+
+class User(BaseModel):
+    name: str
+    age: int
+    
+    # Приватный атрибут с префиксом _
+    _created_at: datetime = PrivateAttr(default_factory=datetime.now)
+    _access_count: int = PrivateAttr(default=0)
+    
+    def increment_access(self):
+        self._access_count += 1
+    
+    def get_access_count(self) -> int:
+        return self._access_count
+
+user = User(name="Иван", age=30)
+user.increment_access()
+user.increment_access()
+print(user.get_access_count())  # 2
+
+# Приватные атрибуты не включаются в сериализацию
+print(user.model_dump())  # {'name': 'Иван', 'age': 30}
+
+class CachedModel(BaseModel):
+    data: str
+    _cache: dict = PrivateAttr(default_factory=dict)
+    
+    def get_cached(self, key: str, default=None):
+        return self._cache.get(key, default)
+    
+    def set_cached(self, key: str, value):
+        self._cache[key] = value
+
+model = CachedModel(data="test")
+model.set_cached("result", "computed_value")
+print(model.get_cached("result"))  # computed_value</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Кэширование вычисленных значений</li>
+                        <li>Внутреннее состояние без сериализации</li>
+                        <li>Счетчики, метрики, временные данные</li>
+                        <li>Данные, не относящиеся к бизнес-логике</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-8" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400">8. Model Config расширенные опции</h2>
+                <p class="text-gray-300 mb-4">
+                    Дополнительные параметры конфигурации для тонкой настройки поведения моделей.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, ConfigDict, Field
+
+class StrictConfig(BaseModel):
+    model_config = ConfigDict(
+        # Строгие типы
+        strict=True,
+        # Минимум и максимум для всех полей
+        str_min_length=1,
+        str_max_length=1000,
+        # Убирать пробелы из строк
+        str_strip_whitespace=True,
+        # Запретить мутации после создания
+        frozen=True,
+        # Валидировать при присваивании
+        validate_assignment=True,
+        # Дополнительные поля
+        extra='forbid',  # 'allow', 'ignore', 'forbid'
+    )
+    
+    name: str
+    value: int
+
+class JsonConfig(BaseModel):
+    model_config = ConfigDict(
+        # Использовать enum values в JSON
+        use_enum_values=True,
+        # Сериализовать по alias
+        populate_by_name=True,
+        # JSON схема
+        json_schema_extra={
+            "examples": [
+                {"field1": "value1", "field2": 123}
+            ]
+        }
+    )
+    
+    field1: str
+    field2: int
+
+class ArbitraryTypes(BaseModel):
+    model_config = ConfigDict(
+        # Разрешить произвольные типы
+        arbitrary_types_allowed=True
+    )
+    
+    # Можно использовать кастомные классы
+    custom_obj: object
+
+import datetime
+
+class DateConfig(BaseModel):
+    model_config = ConfigDict(
+        # Настройки для дат
+        validate_default=True,
+    )
+    
+    created_at: datetime.datetime = Field(
+        default_factory=datetime.datetime.now
+    )</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>strict=True для финансовых данных</li>
+                        <li>frozen=True для value objects</li>
+                        <li>extra='forbid' для строгого API</li>
+                        <li>arbitrary_types_allowed для интеграции с legacy кодом</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-9" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400">9. Обработка ошибок валидации</h2>
+                <p class="text-gray-300 mb-4">
+                    Детальная работа с ValidationError для обработки и отображения ошибок валидации.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, ValidationError, Field
+
+class User(BaseModel):
+    username: str = Field(min_length=3)
+    email: str
+    age: int = Field(ge=18, le=120)
+
+try:
+    user = User(
+        username="ab",  # Слишком короткий
+        email="not-an-email",
+        age=150  # Слишком большой
+    )
+except ValidationError as e:
+    # Получение всех ошибок
+    print("Количество ошибок:", e.error_count())
+    
+    # Детали каждой ошибки
+    for error in e.errors():
+        print(f"Поле: {error['loc']}")
+        print(f"Тип: {error['type']}")
+        print(f"Сообщение: {error['msg']}")
+        print(f"Значение: {error.get('input')}")
+        print("---")
+    
+    # JSON представление ошибок
+    print("\nJSON:")
+    print(e.json())
+    
+    # Словарь ошибок
+    print("\nDict:")
+    print(e.errors())
+
+# Кастомные сообщения об ошибках
+from pydantic import field_validator
+
+class CustomErrors(BaseModel):
+    password: str
+    
+    @field_validator('password')
+    @classmethod
+    def validate_password(cls, v):
+        if len(v) < 8:
+            raise ValueError('Пароль слишком короткий (минимум 8 символов)')
+        if not any(c.isupper() for c in v):
+            raise ValueError('Пароль должен содержать заглавную букву')
+        return v
+
+try:
+    CustomErrors(password="weak")
+except ValidationError as e:
+    # Кастомные сообщения
+    for error in e.errors():
+        print(error['msg'])
+
+# Обработка ошибок для API
+def handle_validation_error(e: ValidationError) -> dict:
+    """Форматирование ошибок для API response"""
+    errors = {}
+    for error in e.errors():
+        field = '.'.join(str(loc) for loc in error['loc'])
+        errors[field] = error['msg']
+    return {"errors": errors, "status": "validation_failed"}
+
+try:
+    user = User(username="ab", email="bad", age=15)
+except ValidationError as e:
+    response = handle_validation_error(e)
+    print(response)</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Отображение ошибок пользователю в UI</li>
+                        <li>Логирование проблем валидации</li>
+                        <li>API error responses с деталями</li>
+                        <li>Отладка проблем с данными</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-10" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-blue-400">10. Переопределение парсинга типов</h2>
+                <p class="text-gray-300 mb-4">
+                    Кастомизация процесса парсинга данных для специфичных типов и форматов.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, field_validator
+from datetime import datetime
+from typing import Any
+
+class CustomParsing(BaseModel):
+    # Парсинг даты из разных форматов
+    date_field: datetime
+    
+    @field_validator('date_field', mode='before')
+    @classmethod
+    def parse_date(cls, v):
+        if isinstance(v, datetime):
+            return v
+        if isinstance(v, str):
+            # Пробуем разные форматы
+            for fmt in ['%Y-%m-%d', '%d.%m.%Y', '%d/%m/%Y']:
+                try:
+                    return datetime.strptime(v, fmt)
+                except ValueError:
+                    continue
+            raise ValueError(f'Неверный формат даты: {v}')
+        raise ValueError('Дата должна быть строкой или datetime')
+
+# Работает с разными форматами
+obj1 = CustomParsing(date_field="2024-01-15")
+obj2 = CustomParsing(date_field="15.01.2024")
+obj3 = CustomParsing(date_field="15/01/2024")
+
+print(obj1.date_field)
+print(obj2.date_field)
+print(obj3.date_field)
+
+# Парсинг булевых значений
+class BoolParsing(BaseModel):
+    is_active: bool
+    
+    @field_validator('is_active', mode='before')
+    @classmethod
+    def parse_bool(cls, v):
+        if isinstance(v, bool):
+            return v
+        if isinstance(v, str):
+            v_lower = v.lower()
+            if v_lower in ('yes', 'true', '1', 'on', 'да'):
+                return True
+            if v_lower in ('no', 'false', '0', 'off', 'нет'):
+                return False
+        if isinstance(v, int):
+            return bool(v)
+        raise ValueError(f'Невозможно преобразовать в bool: {v}')
+
+# Различные способы указать boolean
+bool1 = BoolParsing(is_active="yes")
+bool2 = BoolParsing(is_active="да")
+bool3 = BoolParsing(is_active=1)
+print(bool1.is_active, bool2.is_active, bool3.is_active)  # True True True
+
+# Парсинг списков из строки
+class ListParsing(BaseModel):
+    tags: list[str]
+    
+    @field_validator('tags', mode='before')
+    @classmethod
+    def parse_tags(cls, v):
+        if isinstance(v, list):
+            return v
+        if isinstance(v, str):
+            # Парсим из CSV
+            return [tag.strip() for tag in v.split(',')]
+        raise ValueError('Tags должны быть списком или CSV строкой')
+
+# Из строки и списка
+tags1 = ListParsing(tags="python, pydantic, fastapi")
+tags2 = ListParsing(tags=["python", "pydantic", "fastapi"])
+print(tags1.tags)
+print(tags2.tags)</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Парсинг дат в разных форматах</li>
+                        <li>Гибкий парсинг булевых значений</li>
+                        <li>Преобразование CSV в списки</li>
+                        <li>Работа с legacy данными в нестандартных форматах</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-11" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">11. Валидаторы полей (@field_validator)</h2>
+                <p class="text-gray-300 mb-4">
+                    field_validator позволяет создавать кастомную логику валидации для отдельных полей.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, field_validator, ValidationError
+
+class UserRegistration(BaseModel):
+    username: str
+    password: str
+    email: str
+    age: int
+    
+    @field_validator('username')
+    @classmethod
+    def username_alphanumeric(cls, v):
+        if not v.isalnum():
+            raise ValueError('Username должен содержать только буквы и цифры')
+        if len(v) < 3:
+            raise ValueError('Username должен быть не менее 3 символов')
+        return v.lower()  # Нормализация
+    
+    @field_validator('password')
+    @classmethod
+    def password_strength(cls, v):
+        if len(v) < 8:
+            raise ValueError('Пароль должен быть не менее 8 символов')
+        if not any(c.isupper() for c in v):
+            raise ValueError('Пароль должен содержать заглавную букву')
+        if not any(c.isdigit() for c in v):
+            raise ValueError('Пароль должен содержать цифру')
+        return v
+    
+    @field_validator('email')
+    @classmethod
+    def email_valid(cls, v):
+        if '@' not in v or '.' not in v:
+            raise ValueError('Некорректный email')
+        return v.lower()
+    
+    @field_validator('age')
+    @classmethod
+    def age_valid(cls, v):
+        if v < 18:
+            raise ValueError('Возраст должен быть не менее 18 лет')
+        if v > 120:
+            raise ValueError('Некорректный возраст')
+        return v
+
+# Валидный пример
+user = UserRegistration(
+    username="User123",
+    password="SecurePass1",
+    email="User@Example.Com",
+    age=25
+)
+print(user.username)  # user123 (нормализовано)
+print(user.email)  # user@example.com (нормализовано)
+
+# Невалидный пример
+try:
+    invalid = UserRegistration(
+        username="user@123",  # Содержит @
+        password="weak",  # Слишком короткий
+        email="invalid",
+        age=15  # Меньше 18
+    )
+except ValidationError as e:
+    print(e)</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Проверка формата данных (email, телефон, URL)</li>
+                        <li>Бизнес-правила для отдельных полей</li>
+                        <li>Нормализация значений (lowercase, trim)</li>
+                        <li>Сложная валидация одного поля</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-12" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">12. Валидаторы моделей (@model_validator)</h2>
+                <p class="text-gray-300 mb-4">
+                    model_validator используется для валидации, которая зависит от нескольких полей одновременно.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, model_validator, ValidationError
+from datetime import date
+
+class Event(BaseModel):
+    title: str
+    start_date: date
+    end_date: date
+    min_participants: int
+    max_participants: int
+    
+    @model_validator(mode='after')
+    def validate_dates(self):
+        if self.end_date < self.start_date:
+            raise ValueError('Дата окончания не может быть раньше даты начала')
+        return self
+    
+    @model_validator(mode='after')
+    def validate_participants(self):
+        if self.max_participants < self.min_participants:
+            raise ValueError(
+                'Максимум участников не может быть меньше минимума'
+            )
+        if self.min_participants < 1:
+            raise ValueError('Минимум участников должен быть >= 1')
+        return self
+
+class PasswordChange(BaseModel):
+    old_password: str
+    new_password: str
+    confirm_password: str
+    
+    @model_validator(mode='after')
+    def passwords_match(self):
+        if self.new_password != self.confirm_password:
+            raise ValueError('Пароли не совпадают')
+        if self.old_password == self.new_password:
+            raise ValueError('Новый пароль должен отличаться от старого')
+        return self
+
+# Валидный пример
+event = Event(
+    title="Python Conference",
+    start_date=date(2024, 6, 1),
+    end_date=date(2024, 6, 3),
+    min_participants=10,
+    max_participants=100
+)
+
+# Невалидные примеры
+try:
+    # Даты в неправильном порядке
+    invalid_event = Event(
+        title="Test",
+        start_date=date(2024, 6, 3),
+        end_date=date(2024, 6, 1),
+        min_participants=10,
+        max_participants=100
+    )
+except ValidationError as e:
+    print(e)
+
+try:
+    # Пароли не совпадают
+    pwd_change = PasswordChange(
+        old_password="OldPass123",
+        new_password="NewPass123",
+        confirm_password="DifferentPass123"
+    )
+except ValidationError as e:
+    print(e)</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Cross-field валидация (сравнение нескольких полей)</li>
+                        <li>Проверка бизнес-правил, затрагивающих модель целиком</li>
+                        <li>Валидация зависимостей между полями</li>
+                        <li>Комплексная логика, требующая всех данных модели</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-13" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">13. Параметры mode (before/after)</h2>
+                <p class="text-gray-300 mb-4">
+                    Режимы 'before' и 'after' определяют, когда выполняется валидация относительно парсинга данных.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, field_validator, model_validator
+
+class DataProcessor(BaseModel):
+    raw_input: str
+    processed_value: int
+    
+    # mode='before': валидация ДО парсинга типов
+    # Получаем сырые данные
+    @field_validator('raw_input', mode='before')
+    @classmethod
+    def clean_input(cls, v):
+        print(f"Before: тип={type(v)}, значение={v}")
+        if isinstance(v, str):
+            return v.strip().upper()
+        return v
+    
+    # mode='after': валидация ПОСЛЕ парсинга типов
+    # Получаем уже распарсенные данные
+    @field_validator('processed_value', mode='after')
+    @classmethod
+    def validate_processed(cls, v):
+        print(f"After: тип={type(v)}, значение={v}")
+        if v < 0:
+            raise ValueError('Значение должно быть положительным')
+        return v
+
+class ComplexModel(BaseModel):
+    field_a: str
+    field_b: int
+    result: str = ""
+    
+    # mode='before': работа со словарем данных
+    @model_validator(mode='before')
+    @classmethod
+    def preprocess(cls, data):
+        print(f"Model before: {data}")
+        # data - это словарь
+        if isinstance(data, dict):
+            # Можем добавить или изменить поля
+            data['field_a'] = data.get('field_a', '').upper()
+        return data
+    
+    # mode='after': работа с экземпляром модели
+    @model_validator(mode='after')
+    def postprocess(self):
+        print(f"Model after: field_a={self.field_a}, field_b={self.field_b}")
+        # self - это экземпляр модели
+        self.result = f"{self.field_a}_{self.field_b}"
+        return self
+
+# Примеры использования
+processor = DataProcessor(
+    raw_input="  hello world  ",
+    processed_value="42"
+)
+print(f"raw_input: {processor.raw_input}")  # HELLO WORLD
+print(f"processed_value: {processor.processed_value}")  # 42
+
+complex_data = ComplexModel(field_a="test", field_b=123)
+print(f"result: {complex_data.result}")  # TEST_123</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>mode='before' - для предобработки сырых данных</li>
+                        <li>mode='before' - для трансформации данных перед валидацией</li>
+                        <li>mode='after' - для валидации уже распарсенных данных</li>
+                        <li>mode='after' - для вычисления производных полей</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-14" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">14. Информация о валидации (ValidationInfo)</h2>
+                <p class="text-gray-300 mb-4">
+                    ValidationInfo предоставляет контекст валидации, включая доступ к другим полям и контексту.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, field_validator, ValidationInfo
+
+class UserAccount(BaseModel):
+    username: str
+    role: str
+    max_file_size: int
+    
+    @field_validator('max_file_size')
+    @classmethod
+    def validate_file_size(cls, v, info: ValidationInfo):
+        # Доступ к другим полям через info.data
+        role = info.data.get('role')
+        
+        if role == 'admin':
+            max_allowed = 1000
+        elif role == 'premium':
+            max_allowed = 500
+        else:
+            max_allowed = 100
+        
+        if v > max_allowed:
+            raise ValueError(
+                f'Для роли {role} максимум {max_allowed} MB'
+            )
+        return v
+
+class SecureData(BaseModel):
+    data: str
+    encryption_key: str
+    
+    @field_validator('data')
+    @classmethod
+    def encrypt_if_needed(cls, v, info: ValidationInfo):
+        # Доступ к контексту валидации
+        context = info.context
+        
+        if context and context.get('encrypt'):
+            # Простая "шифровка" для примера
+            key = info.data.get('encryption_key', '')
+            return f"encrypted_{key}_{v}"
+        return v
+
+# Пример с зависимостью от другого поля
+admin = UserAccount(
+    username="admin",
+    role="admin",
+    max_file_size=800  # OK для admin
+)
+
+try:
+    regular = UserAccount(
+        username="user",
+        role="user",
+        max_file_size=200  # Слишком много для обычного user
+    )
+except ValidationError as e:
+    print(e)
+
+# Пример с контекстом
+secure = SecureData.model_validate(
+    {"data": "secret", "encryption_key": "key123"},
+    context={"encrypt": True}
+)
+print(secure.data)  # encrypted_key123_secret
+
+secure2 = SecureData.model_validate(
+    {"data": "public", "encryption_key": "key123"},
+    context={"encrypt": False}
+)
+print(secure2.data)  # public</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Валидация поля зависит от значений других полей</li>
+                        <li>Нужен доступ к контексту (user permissions, settings)</li>
+                        <li>Динамическая валидация в зависимости от внешних условий</li>
+                        <li>Условная обработка данных</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-15" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">15. Сериализация и экспорт</h2>
+                <p class="text-gray-300 mb-4">
+                    Pydantic предоставляет мощные инструменты для сериализации моделей в различные форматы.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field
+from typing import Optional
+
+class Address(BaseModel):
+    street: str
+    city: str
+    country: str
+
+class Person(BaseModel):
+    id: int
+    name: str
+    email: str
+    password: str = Field(exclude=True)  # Всегда исключается
+    age: Optional[int] = None
+    address: Address
+
+person = Person(
+    id=1,
+    name="Иван Иванов",
+    email="ivan@example.com",
+    password="secret123",
+    age=30,
+    address=Address(
+        street="Ленина 1",
+        city="Москва",
+        country="Россия"
+    )
+)
+
+# Базовая сериализация в dict
+data = person.model_dump()
+print(data)  # password автоматически исключён
+
+# Сериализация в JSON
+json_str = person.model_dump_json()
+print(json_str)
+
+# Исключение полей
+without_email = person.model_dump(exclude={'email'})
+print(without_email)
+
+# Включение только определённых полей
+only_name = person.model_dump(include={'name', 'email'})
+print(only_name)
+
+# Исключение вложенных полей
+without_country = person.model_dump(
+    exclude={'address': {'country'}}
+)
+print(without_country)
+
+# Сериализация с форматированием
+json_pretty = person.model_dump_json(indent=2)
+print(json_pretty)
+
+# exclude_unset: исключить поля со значениями по умолчанию
+minimal = person.model_dump(exclude_unset=True)
+
+# exclude_none: исключить поля со значением None
+no_none = person.model_dump(exclude_none=True)</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>API responses - скрыть чувствительные данные</li>
+                        <li>Логирование - исключить password, токены</li>
+                        <li>Сохранение в БД - выбрать нужные поля</li>
+                        <li>Частичные обновления - exclude_unset=True</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-16" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">16. Alias для полей</h2>
+                <p class="text-gray-300 mb-4">
+                    Alias позволяет использовать разные имена для полей при парсинге и сериализации.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field, ConfigDict
+
+class APIResponse(BaseModel):
+    # Используем snake_case в Python, но camelCase в JSON
+    user_id: int = Field(alias="userId")
+    user_name: str = Field(alias="userName")
+    email_address: str = Field(alias="emailAddress")
+    is_active: bool = Field(alias="isActive")
+    
+    model_config = ConfigDict(
+        populate_by_name=True  # Разрешить оба варианта имён
+    )
+
+# Парсинг с alias (camelCase)
+api_data = {
+    "userId": 123,
+    "userName": "Петр",
+    "emailAddress": "petr@example.com",
+    "isActive": True
+}
+response = APIResponse(**api_data)
+
+# Доступ через Python имена (snake_case)
+print(response.user_id)  # 123
+print(response.user_name)  # Петр
+
+# Сериализация с alias
+json_output = response.model_dump(by_alias=True)
+print(json_output)  # {"userId": 123, "userName": "Петр", ...}
+
+# Без alias (Python имена)
+python_output = response.model_dump(by_alias=False)
+print(python_output)  # {"user_id": 123, "user_name": "Петр", ...}
+
+# populate_by_name=True позволяет использовать оба варианта
+response2 = APIResponse(
+    user_id=456,  # Python имя
+    userName="Мария",  # API alias
+    email_address="maria@example.com",  # Python имя
+    isActive=False  # API alias
+)
+
+class DatabaseModel(BaseModel):
+    # Маппинг имён полей БД на Python
+    id: int = Field(alias="ID")
+    full_name: str = Field(alias="FullName")
+    created_date: str = Field(alias="CreatedDate")
+
+# Парсинг из БД
+db_row = {
+    "ID": 1,
+    "FullName": "Иван Сидоров",
+    "CreatedDate": "2024-01-15"
+}
+model = DatabaseModel(**db_row)
+print(model.full_name)  # Иван Сидоров</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Работа с внешними API (camelCase vs snake_case)</li>
+                        <li>Интеграция с legacy системами</li>
+                        <li>Маппинг полей БД на Python атрибуты</li>
+                        <li>Поддержка разных соглашений об именовании</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-17" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">17. Конфигурация модели</h2>
+                <p class="text-gray-300 mb-4">
+                    ConfigDict позволяет настроить поведение модели на глобальном уровне.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, ConfigDict, Field, ValidationError
+
+class StrictModel(BaseModel):
+    model_config = ConfigDict(
+        strict=True,  # Строгая проверка типов
+        frozen=True   # Иммутабельность
+    )
+    
+    id: int
+    name: str
+
+# strict=True: нет автоматического приведения типов
+try:
+    item = StrictModel(id="123", name="Test")  # Ошибка!
+except ValidationError:
+    print("Строгая валидация: '123' не является int")
+
+item = StrictModel(id=123, name="Test")  # OK
+
+# frozen=True: нельзя изменить после создания
+try:
+    item.name = "New Name"  # Ошибка!
+except ValidationError:
+    print("Модель заморожена")
+
+class FlexibleModel(BaseModel):
+    model_config = ConfigDict(
+        extra='allow',  # Разрешить дополнительные поля
+        validate_assignment=True,  # Валидировать при изменении
+        str_strip_whitespace=True,  # Убирать пробелы из строк
+        str_to_lower=False,
+        str_to_upper=False
+    )
+    
+    name: str
+    age: int
+
+# extra='allow': можно добавлять неопределённые поля
+flex = FlexibleModel(
+    name="  Иван  ",
+    age=30,
+    additional_field="extra data"  # Не вызовет ошибку
+)
+print(flex.name)  # "Иван" (пробелы убраны)
+print(flex.additional_field)  # "extra data"
+
+# validate_assignment=True: валидация при присваивании
+flex.age = "25"  # Автоматически преобразуется
+print(flex.age)  # 25
+
+try:
+    flex.age = "invalid"  # Ошибка валидации
+except ValidationError:
+    print("Валидация при присваивании работает")
+
+class AliasModel(BaseModel):
+    model_config = ConfigDict(
+        populate_by_name=True,  # Разрешить оригинальное имя и alias
+        alias_generator=lambda x: ''.join(
+            word.capitalize() for word in x.split('_')
+        )  # Автоматическая генерация CamelCase
+    )
+    
+    user_name: str
+    email_address: str
+
+# Работает и с snake_case и с CamelCase
+user1 = AliasModel(user_name="Test", email_address="test@example.com")
+user2 = AliasModel(UserName="Test2", EmailAddress="test2@example.com")
+
+json_output = user1.model_dump(by_alias=True)
+print(json_output)  # {"UserName": "Test", "EmailAddress": "..."}</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>strict=True для критичных данных без приведения типов</li>
+                        <li>frozen=True для иммутабельных value objects</li>
+                        <li>extra='allow' для гибких API с дополнительными полями</li>
+                        <li>validate_assignment=True для валидации изменений после создания</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-18" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">18. Enum и перечисления</h2>
+                <p class="text-gray-300 mb-4">
+                    Использование Enum для ограниченного набора значений с автоматической валидацией.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from enum import Enum
+from pydantic import BaseModel, ValidationError
+
+class UserRole(str, Enum):
+    ADMIN = "admin"
+    MODERATOR = "moderator"
+    USER = "user"
+    GUEST = "guest"
+
+class OrderStatus(str, Enum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+    CANCELLED = "cancelled"
+
+class Priority(int, Enum):
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
+
+class User(BaseModel):
+    username: str
+    role: UserRole
+
+class Order(BaseModel):
+    order_id: int
+    status: OrderStatus
+    priority: Priority
+
+# Создание с Enum
+user = User(username="admin_user", role=UserRole.ADMIN)
+print(user.role)  # UserRole.ADMIN
+print(user.role.value)  # "admin"
+
+# Создание со строкой (автоматически преобразуется)
+user2 = User(username="regular_user", role="user")
+print(user2.role)  # UserRole.USER
+print(isinstance(user2.role, UserRole))  # True
+
+# Невалидное значение
+try:
+    invalid_user = User(username="test", role="superuser")
+except ValidationError as e:
+    print("Ошибка: неизвестная роль")
+    print(e)
+
+# Работа с заказами
+order = Order(
+    order_id=12345,
+    status=OrderStatus.PROCESSING,
+    priority=Priority.HIGH
+)
+
+# Сериализация
+order_dict = order.model_dump()
+print(order_dict)  # {"order_id": 12345, "status": "processing", ...}
+
+# Сравнение
+if order.priority == Priority.HIGH:
+    print("Высокий приоритет!")
+
+# Переход по статусам
+def update_status(order: Order, new_status: OrderStatus) -> Order:
+    # Бизнес-логика валидации переходов
+    valid_transitions = {
+        OrderStatus.PENDING: [OrderStatus.PROCESSING, OrderStatus.CANCELLED],
+        OrderStatus.PROCESSING: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
+        OrderStatus.SHIPPED: [OrderStatus.DELIVERED],
+    }
+    
+    allowed = valid_transitions.get(order.status, [])
+    if new_status not in allowed:
+        raise ValueError(
+            f"Нельзя изменить статус с {order.status} на {new_status}"
+        )
+    
+    order.status = new_status
+    return order
+
+# Все возможные значения
+print("Доступные роли:", [role.value for role in UserRole])
+print("Доступные статусы:", list(OrderStatus))</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Статусы заказов, пользователей, процессов</li>
+                        <li>Роли и права доступа</li>
+                        <li>Фиксированные категории и типы</li>
+                        <li>Любые поля с ограниченным набором значений</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-19" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">19. Динамические поля</h2>
+                <p class="text-gray-300 mb-4">
+                    RootModel и extra='allow' позволяют создавать модели с динамической структурой.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, RootModel, ConfigDict, Field
+from typing import Dict, Any
+
+# Модель с дополнительными полями
+class FlexibleUser(BaseModel):
+    model_config = ConfigDict(extra='allow')
+    
+    id: int
+    name: str
+    # Любые другие поля будут разрешены
+
+user = FlexibleUser(
+    id=1,
+    name="Иван",
+    age=30,
+    city="Москва",
+    hobbies=["чтение", "спорт"]
+)
+
+print(user.id)  # 1
+print(user.age)  # 30 (динамическое поле)
+print(user.model_dump())  # Все поля, включая динамические
+
+# RootModel: модель-обёртка над типом
+class StringList(RootModel[list[str]]):
+    root: list[str]
+    
+    def append(self, item: str):
+        self.root.append(item)
+
+tags = StringList(root=["python", "pydantic"])
+tags.append("fastapi")
+print(tags.root)  # ["python", "pydantic", "fastapi"]
+
+# Словарь с валидацией значений
+class Settings(RootModel[Dict[str, int]]):
+    root: Dict[str, int]
+    
+    def get_setting(self, key: str, default: int = 0) -> int:
+        return self.root.get(key, default)
+
+settings = Settings(root={
+    "max_connections": 100,
+    "timeout": 30,
+    "retry_count": 3
+})
+
+print(settings.get_setting("timeout"))  # 30
+
+# Комбинированный подход
+class Product(BaseModel):
+    model_config = ConfigDict(extra='allow')
+    
+    # Обязательные поля
+    id: int
+    name: str
+    price: float
+    
+    # Все остальное - динамические атрибуты (метаданные)
+
+product = Product(
+    id=1,
+    name="Ноутбук",
+    price=75000,
+    # Динамические поля - характеристики товара
+    brand="Lenovo",
+    ram="16GB",
+    storage="512GB SSD",
+    color="Серый"
+)
+
+# Получение всех динамических полей
+all_fields = product.model_dump()
+required_fields = {"id", "name", "price"}
+dynamic_fields = {k: v for k, v in all_fields.items() 
+                  if k not in required_fields}
+print(f"Характеристики: {dynamic_fields}")
+
+# Forbid extra fields (запретить дополнительные)
+class StrictProduct(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    
+    id: int
+    name: str
+
+try:
+    # Ошибка: дополнительные поля запрещены
+    strict = StrictProduct(id=1, name="Test", extra_field="value")
+except ValidationError as e:
+    print("Extra fields запрещены")</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>extra='allow' для API с расширяемой схемой</li>
+                        <li>RootModel для оборачивания коллекций с валидацией</li>
+                        <li>Метаданные товаров/продуктов с разными атрибутами</li>
+                        <li>Конфигурации с произвольными параметрами</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-20" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">20. Наследование моделей</h2>
+                <p class="text-gray-300 mb-4">
+                    Наследование позволяет создавать иерархии моделей и переиспользовать логику валидации.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field, field_validator
+from datetime import datetime
+from typing import Optional
+
+# Базовая модель
+class BaseUser(BaseModel):
+    id: int
+    username: str
+    email: str
+    created_at: datetime = Field(default_factory=datetime.now)
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v):
+        if '@' not in v:
+            raise ValueError('Некорректный email')
+        return v.lower()
+
+# Расширение базовой модели
+class RegularUser(BaseUser):
+    subscription_level: str = "free"
+    max_uploads: int = 10
+
+class PremiumUser(BaseUser):
+    subscription_level: str = "premium"
+    max_uploads: int = 100
+    premium_features: list[str] = Field(default_factory=list)
+
+class AdminUser(BaseUser):
+    subscription_level: str = "admin"
+    max_uploads: int = -1  # Неограниченно
+    permissions: list[str] = Field(default_factory=list)
+    can_moderate: bool = True
+
+# Использование
+regular = RegularUser(
+    id=1,
+    username="user1",
+    email="User1@Example.Com"
+)
+print(regular.email)  # user1@example.com (валидация работает)
+print(regular.max_uploads)  # 10
+
+premium = PremiumUser(
+    id=2,
+    username="premium_user",
+    email="premium@example.com",
+    premium_features=["ad_free", "priority_support"]
+)
+
+admin = AdminUser(
+    id=3,
+    username="admin",
+    email="admin@example.com",
+    permissions=["read", "write", "delete", "manage_users"]
+)
+
+# Общий базовый функционал
+class TimestampedModel(BaseModel):
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: Optional[datetime] = None
+
+class Article(TimestampedModel):
+    title: str
+    content: str
+    author_id: int
+
+class Comment(TimestampedModel):
+    article_id: int
+    user_id: int
+    text: str
+
+# Оба имеют timestamp поля
+article = Article(
+    title="Python Tips",
+    content="...",
+    author_id=1
+)
+
+comment = Comment(
+    article_id=1,
+    user_id=2,
+    text="Отличная статья!"
+)
+
+print(article.created_at)
+print(comment.created_at)
+
+# Множественное наследование
+class Timestamped(BaseModel):
+    created_at: datetime = Field(default_factory=datetime.now)
+
+class Authorable(BaseModel):
+    author_id: int
+    author_name: str
+
+class BlogPost(Timestamped, Authorable):
+    title: str
+    content: str
+
+post = BlogPost(
+    title="Новый пост",
+    content="Содержимое",
+    author_id=1,
+    author_name="Иван"
+)
+
+print(post.model_dump())</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Иерархия пользователей с разными уровнями доступа</li>
+                        <li>Общие поля для группы моделей (timestamps, author)</li>
+                        <li>DRY принцип - переиспользование валидации</li>
+                        <li>Полиморфные модели с общим интерфейсом</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-21" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">21. Вложенные модели</h2>
+                <p class="text-gray-300 mb-4">
+                    Вложенные модели позволяют создавать сложные иерархические структуры с валидацией на всех уровнях.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field
+from typing import List, Optional
+
+class Address(BaseModel):
+    street: str
+    city: str
+    postal_code: str
+    country: str = "Россия"
+
+class Phone(BaseModel):
+    number: str
+    type: str  # mobile, home, work
+
+class Company(BaseModel):
+    name: str
+    industry: str
+    employees_count: int
+
+class Person(BaseModel):
+    name: str
+    age: int
+    # Одна вложенная модель
+    address: Address
+    # Опциональная вложенная модель
+    company: Optional[Company] = None
+    # Список вложенных моделей
+    phones: List[Phone] = Field(default_factory=list)
+
+# Создание с вложенными данными
+person = Person(
+    name="Александр Петров",
+    age=35,
+    address={
+        "street": "Тверская 10",
+        "city": "Москва",
+        "postal_code": "125009"
+    },
+    company={
+        "name": "Tech Corp",
+        "industry": "IT",
+        "employees_count": 500
+    },
+    phones=[
+        {"number": "+7-999-123-45-67", "type": "mobile"},
+        {"number": "+7-495-123-45-67", "type": "work"}
+    ]
+)
+
+# Доступ к вложенным полям
+print(person.address.city)  # Москва
+print(person.company.name)  # Tech Corp
+print(person.phones[0].number)  # +7-999-123-45-67
+
+# Сериализация сохраняет структуру
+person_dict = person.model_dump()
+print(person_dict["address"]["city"])  # Москва
+
+# Сложная вложенная структура
+class OrderItem(BaseModel):
+    product_id: int
+    product_name: str
+    quantity: int
+    price: float
+    
+    @property
+    def total(self) -> float:
+        return self.quantity * self.price
+
+class Discount(BaseModel):
+    code: str
+    percent: float = Field(ge=0, le=100)
+
+class Order(BaseModel):
+    order_id: int
+    customer: Person
+    items: List[OrderItem]
+    discount: Optional[Discount] = None
+    
+    @property
+    def subtotal(self) -> float:
+        return sum(item.total for item in self.items)
+    
+    @property
+    def total(self) -> float:
+        subtotal = self.subtotal
+        if self.discount:
+            subtotal *= (1 - self.discount.percent / 100)
+        return subtotal
+
+# Создание заказа
+order = Order(
+    order_id=12345,
+    customer=person,
+    items=[
+        {
+            "product_id": 1,
+            "product_name": "Ноутбук",
+            "quantity": 1,
+            "price": 75000
+        },
+        {
+            "product_id": 2,
+            "product_name": "Мышь",
+            "quantity": 2,
+            "price": 1500
+        }
+    ],
+    discount={"code": "SAVE10", "percent": 10}
+)
+
+print(f"Заказ #{order.order_id}")
+print(f"Клиент: {order.customer.name}")
+print(f"Город доставки: {order.customer.address.city}")
+print(f"Промежуточная сумма: {order.subtotal} руб")
+print(f"Скидка: {order.discount.percent}%")
+print(f"Итого: {order.total} руб")</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Структуры данных с четкой иерархией</li>
+                        <li>API с вложенными объектами (orders, users, etc)</li>
+                        <li>Конфигурационные файлы со сложной структурой</li>
+                        <li>Документы с вложенными элементами</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-22" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">22. UUID и специальные типы</h2>
+                <p class="text-gray-300 mb-4">
+                    Pydantic предоставляет специальные типы для валидации распространенных форматов данных.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field, ValidationError
+from pydantic import EmailStr, HttpUrl, UUID4, IPvAnyAddress
+from pydantic import FilePath, DirectoryPath, Json
+from uuid import UUID, uuid4
+from typing import Any
+
+class AdvancedTypes(BaseModel):
+    # UUID
+    id: UUID4 = Field(default_factory=uuid4)
+    
+    # Email с валидацией
+    # Требует: pip install pydantic[email]
+    email: EmailStr
+    
+    # URL с валидацией
+    website: HttpUrl
+    
+    # IP адрес (поддерживает IPv4 и IPv6)
+    ip_address: IPvAnyAddress
+    
+    # JSON строка, автоматически парсится
+    metadata: Json[Any]
+
+# Создание с валидацией
+try:
+    data = AdvancedTypes(
+        email="user@example.com",
+        website="https://example.com/page",
+        ip_address="192.168.1.1",
+        metadata='{"key": "value", "number": 42}'
+    )
+    
+    print(f"ID: {data.id}")
+    print(f"Email: {data.email}")
+    print(f"Website: {data.website}")
+    print(f"IP: {data.ip_address}")
+    print(f"Metadata: {data.metadata}")
+    print(f"Metadata type: {type(data.metadata)}")  # dict
+except ValidationError as e:
+    print(e)
+
+# Невалидные данные
+try:
+    invalid = AdvancedTypes(
+        email="not-an-email",  # Ошибка
+        website="not a url",  # Ошибка
+        ip_address="999.999.999.999",  # Ошибка
+        metadata="not json"  # Ошибка
+    )
+except ValidationError as e:
+    print("Ошибки валидации:")
+    for error in e.errors():
+        print(f"  {error['loc']}: {error['msg']}")
+
+# Работа с путями файловой системы
+from pathlib import Path
+
+class FileConfig(BaseModel):
+    # Путь должен существовать и быть файлом
+    config_file: FilePath
+    
+    # Путь должен существовать и быть директорией
+    data_directory: DirectoryPath
+
+# Специфичные типы для строк
+from pydantic import constr, conint, confloat, conlist
+
+class ConstrainedTypes(BaseModel):
+    # Строка с ограничениями
+    username: constr(min_length=3, max_length=20, pattern=r'^[a-zA-Z0-9_]+$')
+    
+    # Число с ограничениями
+    age: conint(ge=18, le=120)
+    
+    # Float с ограничениями
+    rating: confloat(ge=0.0, le=5.0)
+    
+    # Список с ограничениями
+    tags: conlist(str, min_length=1, max_length=10)
+
+user = ConstrainedTypes(
+    username="valid_user_123",
+    age=25,
+    rating=4.5,
+    tags=["python", "pydantic"]
+)
+
+# Секретные значения (скрываются при печати)
+from pydantic import SecretStr, SecretBytes
+
+class Credentials(BaseModel):
+    username: str
+    password: SecretStr
+    api_key: SecretStr
+
+creds = Credentials(
+    username="admin",
+    password="super_secret_password",
+    api_key="sk-1234567890"
+)
+
+print(creds)  # password показывается как **********
+print(creds.password.get_secret_value())  # Доступ к реальному значению
+
+# Цвет
+from pydantic import field_validator
+
+class Design(BaseModel):
+    primary_color: str
+    
+    @field_validator('primary_color')
+    @classmethod
+    def validate_hex_color(cls, v):
+        if not v.startswith('#') or len(v) != 7:
+            raise ValueError('Цвет должен быть в формате #RRGGBB')
+        return v
+
+design = Design(primary_color="#FF5733")</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>UUID4 - для уникальных идентификаторов</li>
+                        <li>EmailStr - для валидации email адресов</li>
+                        <li>HttpUrl - для валидации URL</li>
+                        <li>SecretStr - для паролей и API ключей</li>
+                        <li>constr/conint/confloat - для дополнительных ограничений</li>
+                    </ul>
+                </div>
+            </section>
+
+
+            <section id="section-23" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">23. Работа с датами и временем</h2>
+                <p class="text-gray-300 mb-4">
+                    Pydantic обеспечивает мощную поддержку работы с датами, временем и временными зонами.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field, field_validator
+from datetime import date, datetime, time, timedelta
+from typing import Optional
+
+class Event(BaseModel):
+    name: str
+    event_date: date  # Только дата
+    event_time: time  # Только время
+    event_datetime: datetime  # Дата и время
+    duration: timedelta  # Продолжительность
+    
+# Автоматический парсинг из строк
+event = Event(
+    name="Python Conference",
+    event_date="2024-06-15",
+    event_time="10:30:00",
+    event_datetime="2024-06-15T10:30:00",
+    duration="2:30:00"  # 2 часа 30 минут
+)
+
+print(event.event_date)  # 2024-06-15
+print(event.duration)  # 2:30:00
+
+# Работа с timezone
+from datetime import timezone
+import zoneinfo
+
+class TimezoneEvent(BaseModel):
+    name: str
+    starts_at: datetime
+    
+    @field_validator('starts_at', mode='before')
+    @classmethod
+    def ensure_timezone(cls, v):
+        if isinstance(v, datetime) and v.tzinfo is None:
+            # Добавляем UTC если нет timezone
+            return v.replace(tzinfo=timezone.utc)
+        return v
+
+# Форматирование дат при сериализации
+class FormattedDates(BaseModel):
+    created_at: datetime
+    
+    def model_dump(self, **kwargs):
+        data = super().model_dump(**kwargs)
+        # Кастомное форматирование
+        data['created_at'] = self.created_at.strftime('%d.%m.%Y %H:%M')
+        return data
+
+obj = FormattedDates(created_at=datetime.now())
+print(obj.model_dump())  # Дата в формате DD.MM.YYYY HH:MM
+
+# Валидация диапазонов дат
+class DateRange(BaseModel):
+    start_date: date
+    end_date: date
+    
+    @field_validator('end_date')
+    @classmethod
+    def validate_end_after_start(cls, v, info):
+        start = info.data.get('start_date')
+        if start and v < start:
+            raise ValueError('Дата окончания должна быть после начала')
+        return v
+
+date_range = DateRange(
+    start_date="2024-01-01",
+    end_date="2024-12-31"
+)</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Работа с событиями и расписаниями</li>
+                        <li>Временные метки и логирование</li>
+                        <li>Валидация диапазонов дат</li>
+                        <li>Работа с разными временными зонами</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-24" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">24. Пользовательские ошибки</h2>
+                <p class="text-gray-300 mb-4">
+                    Создание информативных и понятных сообщений об ошибках валидации.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, field_validator, ValidationError
+
+class UserRegistration(BaseModel):
+    username: str
+    email: str
+    password: str
+    
+    @field_validator('username')
+    @classmethod
+    def validate_username(cls, v):
+        if len(v) < 3:
+            raise ValueError(
+                'Имя пользователя слишком короткое. '
+                'Минимальная длина: 3 символа. '
+                f'Текущая длина: {len(v)}'
+            )
+        if not v.isalnum():
+            raise ValueError(
+                'Имя пользователя может содержать только '
+                'буквы и цифры, без специальных символов'
+            )
+        return v
+
+try:
+    user = UserRegistration(
+        username="ab!",
+        email="test@example.com",
+        password="password123"
+    )
+except ValidationError as e:
+    for error in e.errors():
+        print(f"❌ {error['loc'][0]}: {error['msg']}")
+
+# Кастомные типы ошибок
+from pydantic import PydanticCustomError
+
+class StrictUser(BaseModel):
+    age: int
+    
+    @field_validator('age')
+    @classmethod
+    def validate_age(cls, v):
+        if v < 18:
+            raise PydanticCustomError(
+                'age_too_low',
+                'Пользователь должен быть совершеннолетним (18+)',
+                {'min_age': 18, 'provided': v}
+            )
+        return v
+
+# Множественные ошибки с контекстом
+class PaymentData(BaseModel):
+    amount: float
+    currency: str
+    
+    @field_validator('amount')
+    @classmethod
+    def validate_amount(cls, v):
+        errors = []
+        if v <= 0:
+            errors.append('Сумма должна быть положительной')
+        if v > 1000000:
+            errors.append('Сумма превышает максимальный лимит (1,000,000)')
+        if v != round(v, 2):
+            errors.append('Максимум 2 знака после запятой')
+        
+        if errors:
+            raise ValueError('; '.join(errors))
+        return v
+
+# Локализация ошибок
+class LocalizedErrors(BaseModel):
+    name: str
+    
+    @field_validator('name')
+    @classmethod
+    def validate_name(cls, v, info):
+        lang = info.context.get('lang', 'en') if info.context else 'en'
+        
+        messages = {
+            'en': 'Name must be at least 2 characters',
+            'ru': 'Имя должно быть не менее 2 символов',
+            'de': 'Name muss mindestens 2 Zeichen lang sein'
+        }
+        
+        if len(v) < 2:
+            raise ValueError(messages.get(lang, messages['en']))
+        return v
+
+# Использование с контекстом языка
+try:
+    LocalizedErrors.model_validate(
+        {'name': 'A'},
+        context={'lang': 'ru'}
+    )
+except ValidationError as e:
+    print(e.errors()[0]['msg'])  # На русском</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Понятные сообщения для пользователей</li>
+                        <li>Локализация ошибок на разные языки</li>
+                        <li>Детальный контекст для отладки</li>
+                        <li>Множественные ошибки в одном поле</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-25" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">25. Интеграция с базами данных</h2>
+                <p class="text-gray-300 mb-4">
+                    Использование Pydantic моделей с ORM и базами данных.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, ConfigDict
+from typing import Optional
+from datetime import datetime
+
+# Модель для создания (без id)
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    full_name: Optional[str] = None
+
+# Модель для обновления (все опционально)
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+
+# Модель для чтения (с id и timestamps)
+class UserRead(BaseModel):
+    id: int
+    username: str
+    email: str
+    full_name: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+# Использование with SQLAlchemy
+"""
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class UserDB(Base):
+    __tablename__ = 'users'
+    
+    id = Column(Integer, primary_key=True)
+    username = Column(String)
+    email = Column(String)
+    full_name = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+# Создание пользователя
+def create_user(db, user_data: UserCreate) -> UserRead:
+    db_user = UserDB(**user_data.model_dump())
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    
+    # from_attributes=True позволяет создать из ORM объекта
+    return UserRead.model_validate(db_user)
+
+# Обновление пользователя
+def update_user(db, user_id: int, user_data: UserUpdate) -> UserRead:
+    db_user = db.query(UserDB).filter(UserDB.id == user_id).first()
+    
+    # Обновляем только переданные поля
+    update_data = user_data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_user, field, value)
+    
+    db.commit()
+    db.refresh(db_user)
+    return UserRead.model_validate(db_user)
+"""
+
+# Паттерн DTO (Data Transfer Object)
+class BaseDTO(BaseModel):
+    model_config = ConfigDict(
+        from_attributes=True,
+        validate_assignment=True
+    )
+
+class ProductDTO(BaseDTO):
+    id: int
+    name: str
+    price: float
+    stock: int
+    
+    @property
+    def is_available(self) -> bool:
+        return self.stock > 0
+
+# Bulk операции с валидацией
+def bulk_create_products(products_data: list[dict]) -> list[ProductDTO]:
+    validated_products = []
+    for data in products_data:
+        try:
+            product = ProductDTO(**data)
+            validated_products.append(product)
+        except ValidationError as e:
+            print(f"Ошибка в продукте {data.get('name')}: {e}")
+    return validated_products</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Валидация данных перед сохранением в БД</li>
+                        <li>Разделение моделей для Create/Update/Read</li>
+                        <li>Преобразование ORM объектов в API responses</li>
+                        <li>Частичные обновления с exclude_unset</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-26" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">26. Условная валидация</h2>
+                <p class="text-gray-300 mb-4">
+                    Валидация полей в зависимости от значений других полей или внешних условий.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, model_validator, field_validator
+from typing import Optional
+
+class ShippingAddress(BaseModel):
+    country: str
+    city: str
+    postal_code: Optional[str] = None
+    state: Optional[str] = None
+    
+    @model_validator(mode='after')
+    def validate_address(self):
+        # Для США требуется state
+        if self.country == 'USA' and not self.state:
+            raise ValueError('Для США обязательно указать штат')
+        
+        # Для России требуется postal_code
+        if self.country == 'Russia' and not self.postal_code:
+            raise ValueError('Для России обязательно указать индекс')
+        
+        return self
+
+# США - требуется штат
+usa_address = ShippingAddress(
+    country='USA',
+    city='New York',
+    state='NY',
+    postal_code='10001'
+)
+
+# Условная валидация payment
+class PaymentMethod(BaseModel):
+    method: str  # card, bank_transfer, cash
+    card_number: Optional[str] = None
+    bank_account: Optional[str] = None
+    
+    @model_validator(mode='after')
+    def validate_payment_details(self):
+        if self.method == 'card' and not self.card_number:
+            raise ValueError('Для оплаты картой требуется номер карты')
+        
+        if self.method == 'bank_transfer' and not self.bank_account:
+            raise ValueError('Для банковского перевода требуется номер счета')
+        
+        if self.method == 'cash':
+            # Для наличных не нужны дополнительные данные
+            self.card_number = None
+            self.bank_account = None
+        
+        return self
+
+payment = PaymentMethod(
+    method='card',
+    card_number='4111-1111-1111-1111'
+)
+
+# Условная валидация на основе роли
+class UserPermissions(BaseModel):
+    role: str  # admin, moderator, user
+    can_delete: bool = False
+    can_edit: bool = False
+    can_view: bool = True
+    
+    @model_validator(mode='after')
+    def set_permissions(self):
+        if self.role == 'admin':
+            self.can_delete = True
+            self.can_edit = True
+            self.can_view = True
+        elif self.role == 'moderator':
+            self.can_delete = False
+            self.can_edit = True
+            self.can_view = True
+        elif self.role == 'user':
+            self.can_delete = False
+            self.can_edit = False
+            self.can_view = True
+        
+        return self
+
+admin = UserPermissions(role='admin')
+print(f"Admin can delete: {admin.can_delete}")  # True
+
+# Динамическая валидация
+class DynamicConfig(BaseModel):
+    environment: str  # development, production
+    debug: bool = True
+    secret_key: Optional[str] = None
+    
+    @model_validator(mode='after')
+    def validate_environment(self):
+        if self.environment == 'production':
+            if self.debug:
+                raise ValueError('Debug должен быть False в production')
+            if not self.secret_key:
+                raise ValueError('Secret key обязателен в production')
+        
+        return self
+
+# Production требует больше валидации
+prod_config = DynamicConfig(
+    environment='production',
+    debug=False,
+    secret_key='super-secret-key-123'
+)</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Валидация зависит от страны/региона</li>
+                        <li>Разные требования для разных типов (payment methods)</li>
+                        <li>Автоматическая установка прав на основе роли</li>
+                        <li>Разные правила для dev/staging/production</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-27" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">27. Миграция и версионирование моделей</h2>
+                <p class="text-gray-300 mb-4">
+                    Управление изменениями схемы данных и поддержка обратной совместимости.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field, field_validator
+from typing import Optional, Union
+
+# Версия 1 - старая модель
+class UserV1(BaseModel):
+    name: str
+    email: str
+    age: int
+
+# Версия 2 - новая модель (разделили name)
+class UserV2(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    age: int
+    phone: Optional[str] = None  # Новое поле
+    
+    @classmethod
+    def from_v1(cls, v1: UserV1):
+        """Миграция из V1 в V2"""
+        parts = v1.name.split(' ', 1)
+        return cls(
+            first_name=parts[0],
+            last_name=parts[1] if len(parts) > 1 else '',
+            email=v1.email,
+            age=v1.age
+        )
+
+# Миграция данных
+old_user = UserV1(name="Иван Петров", email="ivan@example.com", age=30)
+new_user = UserV2.from_v1(old_user)
+print(new_user.first_name, new_user.last_name)
+
+# Универсальный парсер для разных версий
+def parse_user(data: dict) -> Union[UserV1, UserV2]:
+    """Автоматическое определение версии"""
+    if 'first_name' in data:
+        return UserV2(**data)
+    else:
+        return UserV1(**data)
+
+# Backward compatibility - поддержка старых полей
+class BackwardCompatibleUser(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    
+    # Поддержка старого поля 'name'
+    @field_validator('first_name', mode='before')
+    @classmethod
+    def split_name_if_needed(cls, v, info):
+        # Если передан 'name' вместо first_name
+        data = info.data
+        if isinstance(data, dict) and 'name' in data and 'first_name' not in data:
+            parts = data['name'].split(' ', 1)
+            return parts[0]
+        return v
+
+# Deprecated поля с предупреждениями
+import warnings
+
+class UserWithDeprecated(BaseModel):
+    username: str
+    email: str
+    old_field: Optional[str] = Field(None, deprecated=True)
+    
+    @field_validator('old_field')
+    @classmethod
+    def warn_deprecated(cls, v):
+        if v is not None:
+            warnings.warn(
+                'Поле old_field устарело и будет удалено в версии 3.0',
+                DeprecationWarning
+            )
+        return v
+
+# Схема миграций
+class MigrationSchema:
+    @staticmethod
+    def migrate_v1_to_v2(data: dict) -> dict:
+        """Миграция данных из V1 в V2"""
+        if 'name' in data:
+            parts = data['name'].split(' ', 1)
+            data['first_name'] = parts[0]
+            data['last_name'] = parts[1] if len(parts) > 1 else ''
+            del data['name']
+        return data
+    
+    @staticmethod
+    def migrate_v2_to_v3(data: dict) -> dict:
+        """Миграция данных из V2 в V3"""
+        # Добавление новых полей с дефолтными значениями
+        data.setdefault('phone', None)
+        data.setdefault('country', 'Unknown')
+        return data
+    
+    @classmethod
+    def migrate_to_latest(cls, data: dict, from_version: int) -> dict:
+        """Миграция к последней версии"""
+        migrations = {
+            1: cls.migrate_v1_to_v2,
+            2: cls.migrate_v2_to_v3,
+        }
+        
+        current_version = from_version
+        while current_version in migrations:
+            data = migrations[current_version](data)
+            current_version += 1
+        
+        return data
+
+# Использование миграций
+old_data = {'name': 'Иван Петров', 'email': 'ivan@example.com', 'age': 30}
+migrated = MigrationSchema.migrate_to_latest(old_data, from_version=1)
+print(migrated)</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>API версионирование (v1, v2, v3)</li>
+                        <li>Изменение структуры данных без breaking changes</li>
+                        <li>Миграция данных из старых форматов</li>
+                        <li>Поддержка обратной совместимости</li>
+                    </ul>
+                </div>
+            </section>
+            <section id="section-28" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-purple-400">28. Настройки производительности</h2>
+                <p class="text-gray-300 mb-4">
+                    Оптимизация производительности Pydantic моделей для больших объемов данных.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, ConfigDict, Field
+from typing import List
+import time
+
+# Кэширование моделей
+class CachedModel(BaseModel):
+    model_config = ConfigDict(
+        # Закешировать схему для ускорения
+        cache_schema=True
+    )
+    
+    id: int
+    name: str
+    data: dict
+
+# model_rebuild() - пересборка схемы модели
+class DynamicModel(BaseModel):
+    field1: str
+
+# Добавление полей динамически (в runtime)
+# После изменений нужно пересобрать
+DynamicModel.model_rebuild()
+
+# Отключение валидации для известных данных
+class FastModel(BaseModel):
+    id: int
+    name: str
+    value: float
+
+# Обычное создание с валидацией
+start = time.time()
+for i in range(10000):
+    obj = FastModel(id=i, name=f"item_{i}", value=float(i))
+normal_time = time.time() - start
+
+# Создание без валидации (небезопасно!)
+start = time.time()
+for i in range(10000):
+    obj = FastModel.model_construct(
+        id=i,
+        name=f"item_{i}",
+        value=float(i)
+    )
+fast_time = time.time() - start
+
+print(f"С валидацией: {normal_time:.3f}s")
+print(f"Без валидации: {fast_time:.3f}s")
+print(f"Ускорение: {normal_time/fast_time:.1f}x")
+
+# Оптимизация сериализации
+class OptimizedModel(BaseModel):
+    model_config = ConfigDict(
+        # Отключить копирование при валидации
+        # Быстрее, но менее безопасно
+        validate_default=False,
+    )
+    
+    items: List[str] = Field(default_factory=list)
+
+# Использование __pydantic_self__ для доступа к внутренним данным
+class InternalAccess(BaseModel):
+    name: str
+    _cache: dict = {}
+    
+    def get_cached(self, key: str):
+        # Доступ к приватным полям
+        return self._cache.get(key)
+
+# Батчевая обработка
+def process_batch(items: List[dict]) -> List[FastModel]:
+    # Эффективнее обрабатывать батчами
+    return [FastModel(**item) for item in items]
+
+# Переиспользование схемы
+schema = FastModel.model_json_schema()
+# Схема кэшируется и может быть переиспользована
+
+# Ленивая валидация
+class LazyModel(BaseModel):
+    model_config = ConfigDict(
+        # Валидировать только при доступе
+        validate_assignment=False
+    )
+    
+    data: str
+
+# Профилирование
+from pydantic import BaseModel
+
+class ProfiledModel(BaseModel):
+    field1: str
+    field2: int
+    field3: float
+    field4: List[str]
+
+# Измерение времени создания
+import timeit
+
+data = {
+    "field1": "test",
+    "field2": 42,
+    "field3": 3.14,
+    "field4": ["a", "b", "c"]
+}
+
+creation_time = timeit.timeit(
+    lambda: ProfiledModel(**data),
+    number=10000
+)
+
+print(f"Время создания 10000 экземпляров: {creation_time:.3f}s")</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>model_construct() - для доверенных данных без валидации</li>
+                        <li>cache_schema=True - для часто используемых моделей</li>
+                        <li>validate_assignment=False - если не нужна валидация изменений</li>
+                        <li>Батчевая обработка - для больших объемов данных</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-29" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-purple-400">29. Работа с контекстом валидации</h2>
+                <p class="text-gray-300 mb-4">
+                    Контекст позволяет передавать дополнительную информацию в валидаторы без изменения сигнатуры модели.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, field_validator, ValidationInfo, model_validator
+
+class Document(BaseModel):
+    title: str
+    content: str
+    access_level: int
+    
+    @field_validator('content')
+    @classmethod
+    def validate_content(cls, v, info: ValidationInfo):
+        # Получение контекста
+        context = info.context
+        if context is None:
+            return v
+        
+        # Проверка прав доступа из контекста
+        user_level = context.get('user_access_level', 0)
+        required_level = info.data.get('access_level', 0)
+        
+        if user_level < required_level:
+            raise ValueError(
+                f'Недостаточно прав. Требуется уровень {required_level}'
+            )
+        
+        # Фильтрация контента в зависимости от режима
+        mode = context.get('mode', 'full')
+        if mode == 'preview':
+            return v[:100] + '...' if len(v) > 100 else v
+        
+        return v
+
+# Использование с контекстом
+admin_context = {
+    'user_access_level': 10,
+    'mode': 'full'
+}
+
+doc = Document.model_validate(
+    {
+        'title': 'Секретный документ',
+        'content': 'Это конфиденциальная информация...',
+        'access_level': 5
+    },
+    context=admin_context
+)
+
+# Обычный пользователь
+user_context = {
+    'user_access_level': 3,
+    'mode': 'preview'
+}
+
+try:
+    doc2 = Document.model_validate(
+        {
+            'title': 'Секретный документ',
+            'content': 'Это конфиденциальная информация...',
+            'access_level': 5
+        },
+        context=user_context
+    )
+except ValidationError as e:
+    print("Доступ запрещен")
+
+# Контекст для условной валидации
+class PaymentData(BaseModel):
+    amount: float
+    currency: str
+    card_number: str
+    
+    @model_validator(mode='after')
+    def validate_payment(self):
+        # Получаем контекст через ValidationInfo
+        return self
+    
+    @field_validator('amount')
+    @classmethod
+    def validate_amount(cls, v, info: ValidationInfo):
+        context = info.context or {}
+        
+        # Лимиты зависят от типа аккаунта
+        account_type = context.get('account_type', 'basic')
+        
+        limits = {
+            'basic': 1000,
+            'premium': 10000,
+            'business': 100000
+        }
+        
+        max_amount = limits.get(account_type, 1000)
+        
+        if v > max_amount:
+            raise ValueError(
+                f'Превышен лимит для {account_type}: {max_amount}'
+            )
+        
+        return v
+
+# Разные лимиты для разных пользователей
+basic_payment = PaymentData.model_validate(
+    {
+        'amount': 500,
+        'currency': 'RUB',
+        'card_number': '1234-5678-9012-3456'
+    },
+    context={'account_type': 'basic'}
+)
+
+business_payment = PaymentData.model_validate(
+    {
+        'amount': 50000,
+        'currency': 'RUB',
+        'card_number': '1234-5678-9012-3456'
+    },
+    context={'account_type': 'business'}
+)
+
+# Контекст для A/B тестирования
+class Feature(BaseModel):
+    name: str
+    enabled: bool
+    
+    @field_validator('enabled')
+    @classmethod
+    def check_feature_flag(cls, v, info: ValidationInfo):
+        context = info.context or {}
+        feature_flags = context.get('feature_flags', {})
+        feature_name = info.data.get('name')
+        
+        # Проверка feature flag
+        if feature_name in feature_flags:
+            return feature_flags[feature_name]
+        
+        return v
+
+# Для разных пользователей разные фичи
+user_a_features = Feature.model_validate(
+    {'name': 'new_ui', 'enabled': False},
+    context={'feature_flags': {'new_ui': True}}
+)
+
+user_b_features = Feature.model_validate(
+    {'name': 'new_ui', 'enabled': False},
+    context={'feature_flags': {'new_ui': False}}
+)
+
+print(f"User A new_ui: {user_a_features.enabled}")  # True
+print(f"User B new_ui: {user_b_features.enabled}")  # False</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Валидация с учетом прав пользователя</li>
+                        <li>Условная обработка данных (режимы, настройки)</li>
+                        <li>A/B тестирование и feature flags</li>
+                        <li>Передача внешних зависимостей в валидаторы</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-30" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-purple-400">30. Кастомные типы данных</h2>
+                <p class="text-gray-300 mb-4">
+                    Создание собственных типов данных с валидацией через Annotated и кастомные валидаторы.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, field_validator, ValidationError
+from typing import Annotated, Any
+from pydantic.functional_validators import AfterValidator, BeforeValidator
+
+# Кастомный валидатор с AfterValidator
+def validate_even(v: int) -> int:
+    if v % 2 != 0:
+        raise ValueError('Число должно быть четным')
+    return v
+
+EvenInt = Annotated[int, AfterValidator(validate_even)]
+
+# Кастомный валидатор с BeforeValidator
+def parse_phone(v: Any) -> str:
+    # Нормализация номера телефона
+    if isinstance(v, str):
+        # Удаляем все кроме цифр
+        digits = ''.join(c for c in v if c.isdigit())
+        if len(digits) == 11:
+            return f"+{digits[0]} ({digits[1:4]}) {digits[4:7]}-{digits[7:9]}-{digits[9:11]}"
+        elif len(digits) == 10:
+            return f"+7 ({digits[0:3]}) {digits[3:6]}-{digits[6:8]}-{digits[8:10]}"
+    raise ValueError('Некорректный номер телефона')
+
+PhoneNumber = Annotated[str, BeforeValidator(parse_phone)]
+
+class UserContact(BaseModel):
+    name: str
+    age: EvenInt  # Только четные числа
+    phone: PhoneNumber
+
+# Использование
+try:
+    user1 = UserContact(
+        name="Иван",
+        age=30,  # OK - четное
+        phone="89991234567"
+    )
+    print(user1.phone)  # +7 (999) 123-45-67
+except ValidationError as e:
+    print(e)
+
+try:
+    user2 = UserContact(
+        name="Петр",
+        age=31,  # Ошибка - нечетное
+        phone="89991234567"
+    )
+except ValidationError as e:
+    print("Возраст должен быть четным")
+
+# Сложный кастомный тип
+def validate_password_strength(v: str) -> str:
+    if len(v) < 8:
+        raise ValueError('Минимум 8 символов')
+    if not any(c.isupper() for c in v):
+        raise ValueError('Нужна минимум одна заглавная буква')
+    if not any(c.islower() for c in v):
+        raise ValueError('Нужна минимум одна строчная буква')
+    if not any(c.isdigit() for c in v):
+        raise ValueError('Нужна минимум одна цифра')
+    return v
+
+StrongPassword = Annotated[str, AfterValidator(validate_password_strength)]
+
+# Кастомный тип для Email домена
+def validate_company_email(v: str) -> str:
+    if not v.endswith('@company.com'):
+        raise ValueError('Email должен быть в домене @company.com')
+    return v.lower()
+
+CompanyEmail = Annotated[str, AfterValidator(validate_company_email)]
+
+class Employee(BaseModel):
+    name: str
+    email: CompanyEmail
+    password: StrongPassword
+
+emp = Employee(
+    name="Анна",
+    email="Anna@Company.Com",
+    password="SecurePass123"
+)
+print(emp.email)  # anna@company.com
+
+# Композиция валидаторов
+def strip_whitespace(v: Any) -> str:
+    return v.strip() if isinstance(v, str) else str(v)
+
+def to_uppercase(v: str) -> str:
+    return v.upper()
+
+UppercaseStr = Annotated[
+    str,
+    BeforeValidator(strip_whitespace),
+    AfterValidator(to_uppercase)
+]
+
+class Product(BaseModel):
+    code: UppercaseStr
+
+product = Product(code="  abc123  ")
+print(product.code)  # ABC123
+
+# Параметризованный кастомный тип
+from typing import TypeVar
+
+T = TypeVar('T')
+
+def create_range_validator(min_val, max_val):
+    def validate_range(v):
+        if not min_val <= v <= max_val:
+            raise ValueError(f'Значение должно быть между {min_val} и {max_val}')
+        return v
+    return validate_range
+
+# Использование
+Percentage = Annotated[float, AfterValidator(create_range_validator(0, 100))]
+Rating = Annotated[float, AfterValidator(create_range_validator(0, 5))]
+
+class Review(BaseModel):
+    rating: Rating
+    confidence: Percentage
+
+review = Review(rating=4.5, confidence=95.0)
+
+try:
+    invalid_review = Review(rating=6.0, confidence=150.0)
+except ValidationError as e:
+    print("Валидация не прошла")</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Переиспользуемая валидация для специфичных типов</li>
+                        <li>Доменные типы (PhoneNumber, Email, Password)</li>
+                        <li>Нормализация данных перед сохранением</li>
+                        <li>Композиция нескольких валидаторов</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-31" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-purple-400">31. Транспортировка моделей (JSON Schema)</h2>
+                <p class="text-gray-300 mb-4">
+                    Экспорт Pydantic моделей в JSON Schema для документации API и интеграции с другими системами.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field
+from typing import List, Optional
+import json
+
+class Address(BaseModel):
+    street: str = Field(description="Название улицы")
+    city: str = Field(description="Город")
+    postal_code: str = Field(
+        description="Почтовый индекс",
+        pattern=r'^\d{6}$'
+    )
+
+class User(BaseModel):
+    """Модель пользователя системы"""
+    
+    id: int = Field(description="Уникальный идентификатор", examples=[1, 2, 3])
+    username: str = Field(
+        min_length=3,
+        max_length=50,
+        description="Имя пользователя",
+        examples=["john_doe", "jane_smith"]
+    )
+    email: str = Field(
+        description="Email адрес",
+        examples=["user@example.com"]
+    )
+    age: Optional[int] = Field(
+        None,
+        ge=18,
+        le=120,
+        description="Возраст пользователя"
+    )
+    tags: List[str] = Field(
+        default_factory=list,
+        description="Теги пользователя",
+        examples=[["python", "developer"]]
+    )
+    address: Optional[Address] = Field(
+        None,
+        description="Адрес пользователя"
+    )
+
+# Генерация JSON Schema
+schema = User.model_json_schema()
+print(json.dumps(schema, indent=2, ensure_ascii=False))
+
+# Результат будет содержать:
+# - type, properties, required
+# - descriptions для полей
+# - constraints (minLength, maximum, etc)
+# - examples
+# - nested schemas для вложенных моделей
+
+# Использование в FastAPI (автоматическая документация)
+"""
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.post("/users/")
+def create_user(user: User):
+    # FastAPI автоматически генерирует OpenAPI документацию
+    # из Pydantic моделей
+    return user
+
+# Swagger UI будет показывать:
+# - Все поля модели
+# - Описания
+# - Ограничения
+# - Примеры
+"""
+
+# Кастомизация JSON Schema
+class Product(BaseModel):
+    model_config = {
+        'json_schema_extra': {
+            'examples': [
+                {
+                    'id': 1,
+                    'name': 'Ноутбук',
+                    'price': 75000.0,
+                    'in_stock': True
+                }
+            ]
+        }
+    }
+    
+    id: int
+    name: str
+    price: float = Field(gt=0)
+    in_stock: bool = True
+
+product_schema = Product.model_json_schema()
+
+# Схема для multiple моделей
+from pydantic import BaseModel
+
+class CreateUserRequest(BaseModel):
+    username: str
+    email: str
+    password: str
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    created_at: str
+
+# Генерация схемы для документации
+def generate_api_schema():
+    return {
+        'CreateUserRequest': CreateUserRequest.model_json_schema(),
+        'UserResponse': UserResponse.model_json_schema(),
+    }
+
+# Валидация данных по схеме из другой системы
+import jsonschema
+
+def validate_with_schema(data: dict):
+    schema = User.model_json_schema()
+    try:
+        jsonschema.validate(instance=data, schema=schema)
+        return True
+    except jsonschema.exceptions.ValidationError:
+        return False
+
+# Экспорт схемы для фронтенда
+def export_schemas_for_frontend():
+    """Генерация TypeScript интерфейсов или схем для фронтенда"""
+    schemas = {
+        'User': User.model_json_schema(),
+        'Address': Address.model_json_schema(),
+        'Product': Product.model_json_schema(),
+    }
+    
+    with open('api_schemas.json', 'w', encoding='utf-8') as f:
+        json.dump(schemas, f, indent=2, ensure_ascii=False)
+
+# Версионирование API
+class UserV1(BaseModel):
+    name: str
+    email: str
+
+class UserV2(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    phone: Optional[str] = None
+
+schemas_by_version = {
+    'v1': UserV1.model_json_schema(),
+    'v2': UserV2.model_json_schema(),
+}</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Автоматическая генерация API документации</li>
+                        <li>OpenAPI/Swagger спецификации</li>
+                        <li>Экспорт схем для фронтенда (TypeScript)</li>
+                        <li>Валидация данных между разными системами</li>
+                        <li>Версионирование API схем</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="section-32" class="bg-slate-800 rounded-lg p-6 shadow-xl">
+                <h2 class="text-3xl font-bold mb-4 text-purple-400">32. Работа с None значениями</h2>
+                <p class="text-gray-300 mb-4">
+                    Правильная обработка None, Optional и nullable полей в Pydantic.
+                </p>
+                <div class="code-block relative mb-4">
+                    <button onclick="copyCode(this)" class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        Копировать
+                    </button>
+                    <pre><code class="language-python">from pydantic import BaseModel, Field
+from typing import Optional, Union
+
+class UserProfile(BaseModel):
+    # Обязательное поле (не может быть None)
+    username: str
+    
+    # Optional - может быть None
+    middle_name: Optional[str] = None
+    
+    # Optional с default значением (не None)
+    bio: Optional[str] = "Не указано"
+    
+    # Поле может отсутствовать
+    age: Optional[int] = None
+    
+    # Union с None (альтернативный синтаксис)
+    phone: Union[str, None] = None
+
+# Создание с None значениями
+profile1 = UserProfile(username="john_doe")
+print(profile1.middle_name)  # None
+print(profile1.bio)  # "Не указано"
+
+profile2 = UserProfile(
+    username="jane_doe",
+    middle_name="Anne",
+    bio=None,  # Явно устанавливаем None
+    age=25
+)
+print(profile2.bio)  # None (переопределено)
+
+# Различие между None и отсутствующим значением
+class Article(BaseModel):
+    title: str
+    subtitle: Optional[str] = None
+    description: Optional[str] = Field(None)
+
+# Проверка, было ли поле установлено
+article1 = Article(title="Test")
+article2 = Article(title="Test", subtitle=None)
+
+# Оба случая дают None, но:
+# - article1.subtitle не был передан
+# - article2.subtitle был явно установлен в None
+
+# exclude_none при сериализации
+print(article1.model_dump(exclude_none=True))
+# {'title': 'Test'}
+
+print(article2.model_dump(exclude_none=True))
+# {'title': 'Test'}
+
+# exclude_unset - исключить непереданные поля
+print(article1.model_dump(exclude_unset=True))
+# {'title': 'Test'}
+
+print(article2.model_dump(exclude_unset=True))
+# {'title': 'Test', 'subtitle': None}
+
+# Валидация None значений
+class Settings(BaseModel):
+    api_key: Optional[str] = None
+    timeout: Optional[int] = Field(None, ge=0)
+    
+    @field_validator('api_key')
+    @classmethod
+    def validate_api_key(cls, v):
+        if v is not None and len(v) < 10:
+            raise ValueError('API ключ должен быть минимум 10 символов')
+        return v
+
+# None проходит валидацию
+settings1 = Settings()  # OK
+settings2 = Settings(api_key=None)  # OK
+settings3 = Settings(api_key="valid_key_123")  # OK
+
+try:
+    settings4 = Settings(api_key="short")  # Ошибка
+except ValidationError as e:
+    print("API ключ слишком короткий")
+
+# Дефолтные значения с None
+from typing import List
+
+class Group(BaseModel):
+    name: str
+    # Пустой список вместо None
+    members: List[str] = Field(default_factory=list)
+    # None если не указан
+    description: Optional[str] = None
+    # Дефолтное значение
+    is_public: bool = True
+
+group = Group(name="Python Developers")
+print(group.members)  # []
+print(group.description)  # None
+
+# Обработка null из JSON
+import json
+
+json_data = '{"username": "test", "age": null}'
+profile = UserProfile.model_validate_json(json_data)
+print(profile.age)  # None
+
+# Nullable в сериализации
+class DatabaseModel(BaseModel):
+    id: int
+    value: Optional[str] = None
+    
+    model_config = {
+        'json_schema_extra': {
+            'examples': [
+                {'id': 1, 'value': 'test'},
+                {'id': 2, 'value': None}
+            ]
+        }
+    }
+
+# JSON Schema будет включать null как допустимый тип
+schema = DatabaseModel.model_json_schema()
+print(schema['properties']['value'])
+# {'anyOf': [{'type': 'string'}, {'type': 'null'}]}
+
+# Паттерн для частичных обновлений
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    age: Optional[int] = None
+
+def update_user(user_id: int, update: UserUpdate):
+    # Обновляем только переданные поля
+    update_data = update.model_dump(exclude_unset=True)
+    # update_data содержит только те поля, которые были переданы
+    return update_data
+
+# Только username будет в update_data
+update = UserUpdate(username="new_name")
+data = update.model_dump(exclude_unset=True)
+print(data)  # {'username': 'new_name'}
+
+# Явное указание None для сброса значения
+update2 = UserUpdate(email=None)
+data2 = update2.model_dump(exclude_unset=True)
+print(data2)  # {'email': None}</code></pre>
+                </div>
+                <div class="bg-slate-900 rounded p-4 mt-4">
+                    <h3 class="font-semibold text-green-400 mb-2">💡 Когда использовать:</h3>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">
+                        <li>Optional[T] - для полей, которые могут быть None</li>
+                        <li>exclude_none=True - скрыть None в API responses</li>
+                        <li>exclude_unset=True - для PATCH запросов (partial updates)</li>
+                        <li>Явный None - для сброса значений в обновлениях</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <footer class="mt-16 text-center text-gray-500 pb-8">
+            <p class="text-sm">
+                PyDantic Шпаргалка | Создано для разработчиков Python
+            </p>
+            <p class="text-xs mt-2">
+                Для использования с Pydantic v2.x
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Инициализация highlight.js
+        hljs.highlightAll();
+
+        // Функция копирования кода
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling;
+            const code = codeBlock.querySelector('code').textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✓ Скопировано';
+                button.classList.add('bg-green-600');
+                button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('bg-green-600');
+                    button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка копирования:', err);
+                button.textContent = '✗ Ошибка';
+            });
+        }
+
+        // Плавная прокрутка к якорям
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Подсветка активного раздела в оглавлении
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -70% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    document.querySelectorAll('#toc a').forEach(link => {
+                        link.classList.remove('text-blue-400', 'font-bold');
+                        link.classList.add('text-gray-400');
+                    });
+                    const activeLink = document.querySelector(`#toc a[href="#${id}"]`);
+                    if (activeLink) {
+                        activeLink.classList.remove('text-gray-400');
+                        activeLink.classList.add('text-blue-400', 'font-bold');
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section[id^="section-"]').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
