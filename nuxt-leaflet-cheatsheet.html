@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuxt Leaflet - Cheatsheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        .copy-btn {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block:hover .copy-btn {
+            opacity: 1;
+        }
+        
+        #toc {
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        
+        #toc::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #toc::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        
+        #toc::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        
+        #toc::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        
+        @media (max-width: 1024px) {
+            #toc {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="font-mono">
+    <div class="flex">
+        <aside id="toc" class="fixed left-0 top-0 h-screen w-64 bg-slate-900 p-6 overflow-y-auto border-r border-slate-700">
+            <h2 class="text-xl font-bold mb-4 text-green-400">Contents</h2>
+            <nav class="space-y-2">
+                <a href="#installation" class="block text-sm hover:text-green-400 transition">Installation</a>
+                <a href="#basic-map" class="block text-sm hover:text-green-400 transition">Basic Map</a>
+                <a href="#markers" class="block text-sm hover:text-green-400 transition">Markers</a>
+                <a href="#popup" class="block text-sm hover:text-green-400 transition">Popups</a>
+                <a href="#tooltip" class="block text-sm hover:text-green-400 transition">Tooltips</a>
+                <a href="#circle" class="block text-sm hover:text-green-400 transition">Circles</a>
+                <a href="#polygon" class="block text-sm hover:text-green-400 transition">Polygons</a>
+                <a href="#polyline" class="block text-sm hover:text-green-400 transition">Polylines</a>
+                <a href="#rectangle" class="block text-sm hover:text-green-400 transition">Rectangles</a>
+                <a href="#geojson" class="block text-sm hover:text-green-400 transition">GeoJSON</a>
+                <a href="#tile-layers" class="block text-sm hover:text-green-400 transition">Tile Layers</a>
+                <a href="#controls" class="block text-sm hover:text-green-400 transition">Controls</a>
+                <a href="#events" class="block text-sm hover:text-green-400 transition">Events</a>
+                <a href="#icons" class="block text-sm hover:text-green-400 transition">Custom Icons</a>
+                <a href="#clustering" class="block text-sm hover:text-green-400 transition">Marker Clustering</a>
+                <a href="#composables" class="block text-sm hover:text-green-400 transition">Composables</a>
+            </nav>
+        </aside>
+
+        <main class="lg:ml-64 flex-1 p-8 max-w-5xl mx-auto">
+            <header class="mb-12">
+                <h1 class="text-5xl font-bold mb-4 text-green-400">Nuxt Leaflet Cheatsheet</h1>
+                <p class="text-slate-400">A comprehensive guide to using Leaflet maps in Nuxt 3 applications</p>
+            </header>
+
+            <section id="installation" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Installation</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Install Package</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-bash">npm install @nuxtjs/leaflet</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Configure nuxt.config.ts</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-typescript">export default defineNuxtConfig({
+  modules: ['@nuxtjs/leaflet'],
+  leaflet: {
+    markerCluster: true
+  }
+})</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="basic-map" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Basic Map</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Simple Map</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;template&gt;
+  &lt;LMap
+    style="height: 500px"
+    :zoom="13"
+    :center="[47.41322, -1.219482]"
+  &gt;
+    &lt;LTileLayer
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      attribution="&amp;copy; OpenStreetMap contributors"
+    /&gt;
+  &lt;/LMap&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">With Reactive State</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const center = ref([51.505, -0.09])
+const zoom = ref(13)
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LMap
+    style="height: 500px"
+    :zoom="zoom"
+    :center="center"
+    @update:zoom="zoom = $event"
+    @update:center="center = $event"
+  &gt;
+    &lt;LTileLayer
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    /&gt;
+  &lt;/LMap&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Map Options</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMap
+  :zoom="13"
+  :center="[51.505, -0.09]"
+  :min-zoom="3"
+  :max-zoom="18"
+  :zoom-animation="true"
+  :max-bounds="[[40, -10], [60, 10]]"
+  :use-global-leaflet="false"
+&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="markers" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Markers</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Basic Marker</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;template&gt;
+  &lt;LMap style="height: 500px" :zoom="13" :center="[51.505, -0.09]"&gt;
+    &lt;LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /&gt;
+    &lt;LMarker :lat-lng="[51.505, -0.09]" /&gt;
+  &lt;/LMap&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Draggable Marker</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const markerPosition = ref([51.505, -0.09])
+
+function onMarkerDrag(event) {
+  markerPosition.value = [event.target.getLatLng().lat, event.target.getLatLng().lng]
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LMap style="height: 500px" :zoom="13" :center="[51.505, -0.09]"&gt;
+    &lt;LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /&gt;
+    &lt;LMarker 
+      :lat-lng="markerPosition" 
+      :draggable="true"
+      @dragend="onMarkerDrag"
+    /&gt;
+  &lt;/LMap&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Multiple Markers</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const markers = ref([
+  { id: 1, position: [51.505, -0.09], title: 'Marker 1' },
+  { id: 2, position: [51.51, -0.1], title: 'Marker 2' },
+  { id: 3, position: [51.52, -0.11], title: 'Marker 3' }
+])
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LMap style="height: 500px" :zoom="13" :center="[51.505, -0.09]"&gt;
+    &lt;LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /&gt;
+    &lt;LMarker 
+      v-for="marker in markers" 
+      :key="marker.id"
+      :lat-lng="marker.position"
+    &gt;
+      &lt;LPopup&gt;{{ marker.title }}&lt;/LPopup&gt;
+    &lt;/LMarker&gt;
+  &lt;/LMap&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="popup" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Popups</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Simple Popup</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMarker :lat-lng="[51.505, -0.09]"&gt;
+  &lt;LPopup&gt;
+    &lt;div&gt;I am a popup!&lt;/div&gt;
+  &lt;/LPopup&gt;
+&lt;/LMarker&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Popup with HTML</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMarker :lat-lng="[51.505, -0.09]"&gt;
+  &lt;LPopup&gt;
+    &lt;div class="text-center"&gt;
+      &lt;h3 class="font-bold"&gt;Location Name&lt;/h3&gt;
+      &lt;p&gt;Description of the location&lt;/p&gt;
+      &lt;button @click="handleClick"&gt;Click me&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/LPopup&gt;
+&lt;/LMarker&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Popup Options</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LPopup
+  :max-width="250"
+  :min-width="200"
+  :max-height="300"
+  :auto-pan="true"
+  :close-button="true"
+  :close-on-click="false"
+&gt;
+  Content here
+&lt;/LPopup&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tooltip" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Tooltips</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Basic Tooltip</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMarker :lat-lng="[51.505, -0.09]"&gt;
+  &lt;LTooltip&gt;I am a tooltip!&lt;/LTooltip&gt;
+&lt;/LMarker&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Permanent Tooltip</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMarker :lat-lng="[51.505, -0.09]"&gt;
+  &lt;LTooltip :permanent="true" :direction="'top'"&gt;
+    Always visible
+  &lt;/LTooltip&gt;
+&lt;/LMarker&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Tooltip Options</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LTooltip
+  :permanent="false"
+  :direction="'top'"
+  :offset="[0, -10]"
+  :opacity="0.9"
+  :sticky="true"
+&gt;
+  Hover tooltip
+&lt;/LTooltip&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="circle" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Circles</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Basic Circle</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LCircle
+  :lat-lng="[51.505, -0.09]"
+  :radius="500"
+  color="red"
+  :fill="true"
+  fill-color="red"
+  :fill-opacity="0.5"
+/&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Circle with Popup</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LCircle
+  :lat-lng="[51.505, -0.09]"
+  :radius="1000"
+  color="#3388ff"
+  :fill="true"
+  fill-color="#3388ff"
+  :fill-opacity="0.3"
+&gt;
+  &lt;LPopup&gt;Circle area&lt;/LPopup&gt;
+&lt;/LCircle&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="polygon" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Polygons</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Basic Polygon</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LPolygon
+  :lat-lngs="[
+    [51.509, -0.08],
+    [51.503, -0.06],
+    [51.51, -0.047]
+  ]"
+  color="green"
+  :fill="true"
+  fill-color="green"
+  :fill-opacity="0.5"
+/&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Polygon with Hole</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const polygonCoords = [
+  [
+    [51.515, -0.09],
+    [51.52, -0.1],
+    [51.52, -0.12]
+  ],
+  [
+    [51.518, -0.10],
+    [51.519, -0.105],
+    [51.517, -0.11]
+  ]
+]
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LPolygon
+    :lat-lngs="polygonCoords"
+    color="purple"
+    :fill="true"
+    fill-color="purple"
+  /&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="polyline" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Polylines</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Basic Polyline</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LPolyline
+  :lat-lngs="[
+    [51.505, -0.09],
+    [51.51, -0.1],
+    [51.515, -0.11]
+  ]"
+  color="blue"
+  :weight="5"
+  :opacity="0.7"
+/&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Multi-segment Polyline</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LPolyline
+  :lat-lngs="[
+    [[51.505, -0.09], [51.51, -0.1]],
+    [[51.515, -0.11], [51.52, -0.12]]
+  ]"
+  color="red"
+  :weight="3"
+  :dashArray="'10, 10'"
+/&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="rectangle" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Rectangles</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Basic Rectangle</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LRectangle
+  :lat-lngs="[
+    [51.49, -0.08],
+    [51.5, -0.06]
+  ]"
+  color="orange"
+  :fill="true"
+  fill-color="orange"
+  :fill-opacity="0.3"
+/&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Rectangle with Bounds</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const bounds = ref([
+  [51.49, -0.08],
+  [51.5, -0.06]
+])
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LRectangle
+    :bounds="bounds"
+    color="#ff7800"
+    :weight="2"
+    :fill="true"
+  &gt;
+    &lt;LPopup&gt;Rectangle bounds&lt;/LPopup&gt;
+  &lt;/LRectangle&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="geojson" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">GeoJSON</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Basic GeoJSON</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const geojson = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [-0.09, 51.505]
+      },
+      properties: {
+        name: 'Location 1'
+      }
+    }
+  ]
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LGeoJson :geojson="geojson" /&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">GeoJSON with Options</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const geojson = { /* your geojson data */ }
+
+const options = {
+  onEachFeature: (feature, layer) =&gt; {
+    if (feature.properties &amp;&amp; feature.properties.name) {
+      layer.bindPopup(feature.properties.name)
+    }
+  },
+  style: (feature) =&gt; {
+    return {
+      color: feature.properties.color || '#3388ff',
+      weight: 2,
+      opacity: 0.6
+    }
+  }
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LGeoJson :geojson="geojson" :options="options" /&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tile-layers" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Tile Layers</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">OpenStreetMap</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LTileLayer
+  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  attribution="&amp;copy; OpenStreetMap contributors"
+/&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Mapbox</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LTileLayer
+  url="https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}"
+  :attribution="'© Mapbox'"
+  :id="'mapbox/streets-v11'"
+  :access-token="'your_mapbox_token'"
+/&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Satellite View (Esri)</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LTileLayer
+  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+  attribution="Tiles &amp;copy; Esri"
+/&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Dark Theme (CartoDB)</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LTileLayer
+  url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+  attribution="&amp;copy; CartoDB"
+/&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="controls" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Controls</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Zoom Control</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMap 
+  :zoom-control="true"
+  :zoom-control-position="'topright'"
+&gt;
+  &lt;!-- map content --&gt;
+&lt;/LMap&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Scale Control</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMap&gt;
+  &lt;LControl position="bottomleft"&gt;
+    &lt;LControlScale :imperial="false" :metric="true" /&gt;
+  &lt;/LControl&gt;
+&lt;/LMap&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Attribution Control</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMap 
+  :attribution-control="true"
+  attribution-prefix="Leaflet"
+&gt;
+  &lt;!-- map content --&gt;
+&lt;/LMap&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Custom Control</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LControl position="topright"&gt;
+  &lt;div class="bg-white p-2 rounded shadow"&gt;
+    &lt;button @click="handleCustomAction"&gt;
+      Custom Action
+    &lt;/button&gt;
+  &lt;/div&gt;
+&lt;/LControl&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="events" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Events</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Map Events</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+function onMapClick(event) {
+  console.log('Map clicked at:', event.latlng)
+}
+
+function onMapReady() {
+  console.log('Map is ready')
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LMap
+    @click="onMapClick"
+    @ready="onMapReady"
+    @zoomend="(e) =&gt; console.log('Zoom changed')"
+    @moveend="(e) =&gt; console.log('Map moved')"
+  &gt;
+    &lt;!-- map content --&gt;
+  &lt;/LMap&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Marker Events</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMarker
+  :lat-lng="[51.505, -0.09]"
+  @click="handleMarkerClick"
+  @mouseover="handleMarkerHover"
+  @mouseout="handleMarkerLeave"
+  @dragstart="handleDragStart"
+  @dragend="handleDragEnd"
+/&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Popup Events</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LPopup
+  @open="() =&gt; console.log('Popup opened')"
+  @close="() =&gt; console.log('Popup closed')"
+&gt;
+  Content
+&lt;/LPopup&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="icons" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Custom Icons</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Icon with URL</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMarker :lat-lng="[51.505, -0.09]"&gt;
+  &lt;LIcon
+    :icon-url="'/images/marker-icon.png'"
+    :icon-size="[25, 41]"
+    :icon-anchor="[12, 41]"
+  /&gt;
+&lt;/LMarker&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Icon with Shadow</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMarker :lat-lng="[51.505, -0.09]"&gt;
+  &lt;LIcon
+    :icon-url="'/images/marker-icon.png'"
+    :shadow-url="'/images/marker-shadow.png'"
+    :icon-size="[25, 41]"
+    :icon-anchor="[12, 41]"
+    :shadow-size="[41, 41]"
+    :shadow-anchor="[12, 41]"
+  /&gt;
+&lt;/LMarker&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">DivIcon (HTML Icon)</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const divIconHtml = '&lt;div style="background: red; width: 20px; height: 20px; border-radius: 50%;"&gt;&lt;/div&gt;'
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LMarker :lat-lng="[51.505, -0.09]"&gt;
+    &lt;LIcon
+      :icon-size="[20, 20]"
+      :icon-anchor="[10, 10]"
+      :html="divIconHtml"
+    /&gt;
+  &lt;/LMarker&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="clustering" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Marker Clustering</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Basic Cluster</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const markers = ref([
+  { lat: 51.5, lng: -0.09, id: 1 },
+  { lat: 51.51, lng: -0.1, id: 2 },
+  { lat: 51.49, lng: -0.08, id: 3 }
+])
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LMap style="height: 500px" :zoom="13" :center="[51.505, -0.09]"&gt;
+    &lt;LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" /&gt;
+    &lt;LMarkerClusterGroup&gt;
+      &lt;LMarker 
+        v-for="marker in markers" 
+        :key="marker.id"
+        :lat-lng="[marker.lat, marker.lng]"
+      /&gt;
+    &lt;/LMarkerClusterGroup&gt;
+  &lt;/LMap&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Cluster Options</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;LMarkerClusterGroup
+  :options="{
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: true,
+    zoomToBoundsOnClick: true,
+    maxClusterRadius: 80
+  }"
+&gt;
+  &lt;!-- markers --&gt;
+&lt;/LMarkerClusterGroup&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="composables" class="mb-12">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">Composables</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">useLeafletMap</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const map = useLeafletMap()
+
+function flyToLocation(lat, lng) {
+  if (map.value) {
+    map.value.flyTo([lat, lng], 15)
+  }
+}
+
+function getMapBounds() {
+  if (map.value) {
+    return map.value.getBounds()
+  }
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LMap ref="map"&gt;
+    &lt;!-- map content --&gt;
+  &lt;/LMap&gt;
+  &lt;button @click="flyToLocation(51.505, -0.09)"&gt;Fly to Location&lt;/button&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">useLeafletDisplay Options</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const { mapRef } = useLeafletDisplay()
+
+onMounted(() =&gt; {
+  if (mapRef.value) {
+    mapRef.value.setZoom(10)
+    mapRef.value.panTo([51.505, -0.09])
+  }
+})
+&lt;/script&gt;</code></pre>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-400">Map Instance Methods</h3>
+                    <div class="code-block relative bg-slate-800 rounded-lg p-4 border border-slate-700">
+                        <button class="copy-btn absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm">Copy</button>
+                        <pre><code class="language-vue">&lt;script setup&gt;
+const mapRef = ref(null)
+
+function fitBounds() {
+  const bounds = [
+    [51.49, -0.08],
+    [51.5, -0.06]
+  ]
+  mapRef.value?.leafletObject?.fitBounds(bounds)
+}
+
+function setView(lat, lng, zoom) {
+  mapRef.value?.leafletObject?.setView([lat, lng], zoom)
+}
+
+function invalidateSize() {
+  mapRef.value?.leafletObject?.invalidateSize()
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;LMap ref="mapRef"&gt;
+    &lt;!-- map content --&gt;
+  &lt;/LMap&gt;
+&lt;/template&gt;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="mt-16 pt-8 border-t border-slate-700 text-center text-slate-400">
+                <p>Nuxt Leaflet Cheatsheet - Interactive maps for Nuxt 3</p>
+                <p class="mt-2 text-sm">Based on Leaflet.js and Vue Leaflet</p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            hljs.highlightAll();
+            
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const codeBlock = this.parentElement.querySelector('code');
+                    const text = codeBlock.textContent;
+                    
+                    navigator.clipboard.writeText(text).then(() => {
+                        this.textContent = 'Copied!';
+                        setTimeout(() => {
+                            this.textContent = 'Copy';
+                        }, 2000);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
