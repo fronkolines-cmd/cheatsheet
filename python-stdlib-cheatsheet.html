@@ -1,0 +1,3339 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шпаргалка по встроенным библиотекам Python</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #e6edf3;
+        }
+        .nav-link:hover {
+            background-color: #1f2937;
+        }
+        .copy-btn {
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: #374151;
+        }
+        .section-card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+        }
+        pre {
+            background-color: #0d1117 !important;
+            margin: 0 !important;
+            padding: 1rem !important;
+            border-radius: 0.5rem;
+        }
+        code {
+            font-size: 0.875rem;
+        }
+        .toc-link {
+            transition: color 0.2s;
+        }
+        .toc-link:hover {
+            color: #58a6ff;
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-gray-900 border-b border-gray-700 shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <h1 class="text-3xl font-bold text-center text-blue-400">🐍 Шпаргалка по встроенным библиотекам Python</h1>
+            <p class="text-center text-gray-400 mt-2">Подробное руководство с примерами и объяснениями</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar TOC -->
+            <aside class="lg:w-1/4 lg:sticky lg:top-24 h-fit">
+                <div class="section-card rounded-lg p-6">
+                    <h2 class="text-2xl font-bold mb-4 text-blue-400">📑 Содержание</h2>
+                    <nav class="space-y-2 max-h-[70vh] overflow-y-auto">
+                        <a href="#os" class="toc-link block text-sm text-gray-300 hover:text-blue-400">1. os — Операционная система</a>
+                        <a href="#sys" class="toc-link block text-sm text-gray-300 hover:text-blue-400">2. sys — Параметры интерпретатора</a>
+                        <a href="#json" class="toc-link block text-sm text-gray-300 hover:text-blue-400">3. json — JSON</a>
+                        <a href="#datetime" class="toc-link block text-sm text-gray-300 hover:text-blue-400">4. datetime — Даты и время</a>
+                        <a href="#re" class="toc-link block text-sm text-gray-300 hover:text-blue-400">5. re — Регулярные выражения</a>
+                        <a href="#collections" class="toc-link block text-sm text-gray-300 hover:text-blue-400">6. collections — Контейнеры</a>
+                        <a href="#subprocess" class="toc-link block text-sm text-gray-300 hover:text-blue-400">7. subprocess — Внешние процессы</a>
+                        <a href="#pathlib" class="toc-link block text-sm text-gray-300 hover:text-blue-400">8. pathlib — ООП работа с путями</a>
+                        <a href="#logging" class="toc-link block text-sm text-gray-300 hover:text-blue-400">9. logging — Логирование</a>
+                        <a href="#random" class="toc-link block text-sm text-gray-300 hover:text-blue-400">10. random — Случайные числа</a>
+                        <a href="#math" class="toc-link block text-sm text-gray-300 hover:text-blue-400">11. math — Математические функции</a>
+                        <a href="#string" class="toc-link block text-sm text-gray-300 hover:text-blue-400">12. string — Утилиты для строк</a>
+                        <a href="#itertools" class="toc-link block text-sm text-gray-300 hover:text-blue-400">13. itertools — Итераторы</a>
+                        <a href="#functools" class="toc-link block text-sm text-gray-300 hover:text-blue-400">14. functools — Функции высшего порядка</a>
+                        <a href="#copy" class="toc-link block text-sm text-gray-300 hover:text-blue-400">15. copy — Копирование объектов</a>
+                        <a href="#pickle" class="toc-link block text-sm text-gray-300 hover:text-blue-400">16. pickle — Сериализация</a>
+                        <a href="#urllib" class="toc-link block text-sm text-gray-300 hover:text-blue-400">17. urllib — Работа с URL</a>
+                        <a href="#tempfile" class="toc-link block text-sm text-gray-300 hover:text-blue-400">18. tempfile — Временные файлы</a>
+                        <a href="#shutil" class="toc-link block text-sm text-gray-300 hover:text-blue-400">19. shutil — Файловые операции</a>
+                        <a href="#zipfile" class="toc-link block text-sm text-gray-300 hover:text-blue-400">20. zipfile — ZIP-архивы</a>
+                        <a href="#tarfile" class="toc-link block text-sm text-gray-300 hover:text-blue-400">21. tarfile — TAR-архивы</a>
+                        <a href="#gzip-bz2" class="toc-link block text-sm text-gray-300 hover:text-blue-400">22. gzip и bz2 — Сжатие</a>
+                        <a href="#csv" class="toc-link block text-sm text-gray-300 hover:text-blue-400">23. csv — CSV-файлы</a>
+                        <a href="#sqlite3" class="toc-link block text-sm text-gray-300 hover:text-blue-400">24. sqlite3 — База данных SQLite</a>
+                        <a href="#hashlib" class="toc-link block text-sm text-gray-300 hover:text-blue-400">25. hashlib — Хеш-функции</a>
+                        <a href="#secrets" class="toc-link block text-sm text-gray-300 hover:text-blue-400">26. secrets — Криптографические числа</a>
+                        <a href="#asyncio" class="toc-link block text-sm text-gray-300 hover:text-blue-400">27. asyncio — Асинхронность</a>
+                        <a href="#threading" class="toc-link block text-sm text-gray-300 hover:text-blue-400">28. threading — Многопоточность</a>
+                        <a href="#multiprocessing" class="toc-link block text-sm text-gray-300 hover:text-blue-400">29. multiprocessing — Многопроцессность</a>
+                        <a href="#unittest" class="toc-link block text-sm text-gray-300 hover:text-blue-400">30. unittest — Модульное тестирование</a>
+                        <a href="#typing" class="toc-link block text-sm text-gray-300 hover:text-blue-400">31. typing — Type hints</a>
+                        <a href="#enum" class="toc-link block text-sm text-gray-300 hover:text-blue-400">32. enum — Перечисления</a>
+                        <a href="#dataclasses" class="toc-link block text-sm text-gray-300 hover:text-blue-400">33. dataclasses — Классы данных</a>
+                        <a href="#traceback" class="toc-link block text-sm text-gray-300 hover:text-blue-400">34. traceback — Трассировка стека</a>
+                        <a href="#inspect" class="toc-link block text-sm text-gray-300 hover:text-blue-400">35. inspect — Инспекция объектов</a>
+                        <a href="#warnings" class="toc-link block text-sm text-gray-300 hover:text-blue-400">36. warnings — Предупреждения</a>
+                        <a href="#time" class="toc-link block text-sm text-gray-300 hover:text-blue-400">37. time — Время</a>
+                        <a href="#socket" class="toc-link block text-sm text-gray-300 hover:text-blue-400">38. socket — Сетевой интерфейс</a>
+                        <a href="#http-server" class="toc-link block text-sm text-gray-300 hover:text-blue-400">39. http.server — HTTP-сервер</a>
+                        <a href="#ssl" class="toc-link block text-sm text-gray-300 hover:text-blue-400">40. ssl — TLS/SSL</a>
+                        <a href="#queue" class="toc-link block text-sm text-gray-300 hover:text-blue-400">41. queue — Синхронизированная очередь</a>
+                        <a href="#decimal" class="toc-link block text-sm text-gray-300 hover:text-blue-400">42. decimal — Десятичная арифметика</a>
+                        <a href="#fractions" class="toc-link block text-sm text-gray-300 hover:text-blue-400">43. fractions — Рациональные числа</a>
+                        <a href="#statistics" class="toc-link block text-sm text-gray-300 hover:text-blue-400">44. statistics — Статистика</a>
+                        <a href="#configparser" class="toc-link block text-sm text-gray-300 hover:text-blue-400">45. configparser — Конфигурации</a>
+                        <a href="#argparse" class="toc-link block text-sm text-gray-300 hover:text-blue-400">46. argparse — Аргументы CLI</a>
+                        <a href="#getpass" class="toc-link block text-sm text-gray-300 hover:text-blue-400">47. getpass — Безопасный ввод пароля</a>
+                        <a href="#platform" class="toc-link block text-sm text-gray-300 hover:text-blue-400">48. platform — Информация о платформе</a>
+                        <a href="#smtplib" class="toc-link block text-sm text-gray-300 hover:text-blue-400">49. smtplib — Отправка email</a>
+                        <a href="#email" class="toc-link block text-sm text-gray-300 hover:text-blue-400">50. email — Email-сообщения</a>
+                        <a href="#calendar" class="toc-link block text-sm text-gray-300 hover:text-blue-400">51. calendar — Календарь</a>
+                        <a href="#cmath" class="toc-link block text-sm text-gray-300 hover:text-blue-400">52. cmath — Комплексные числа</a>
+                        <a href="#pprint" class="toc-link block text-sm text-gray-300 hover:text-blue-400">53. pprint — Pretty-print</a>
+                        <a href="#cmd" class="toc-link block text-sm text-gray-300 hover:text-blue-400">54. cmd — Оболочки команд</a>
+                        <a href="#contextlib" class="toc-link block text-sm text-gray-300 hover:text-blue-400">55. contextlib — Контекстные менеджеры</a>
+                        <a href="#weakref" class="toc-link block text-sm text-gray-300 hover:text-blue-400">56. weakref — Слабые ссылки</a>
+                        <a href="#array" class="toc-link block text-sm text-gray-300 hover:text-blue-400">57. array — Эффективные массивы</a>
+                        <a href="#base64" class="toc-link block text-sm text-gray-300 hover:text-blue-400">58. base64 — Base64</a>
+                        <a href="#binascii" class="toc-link block text-sm text-gray-300 hover:text-blue-400">59. binascii — Бинарные данные</a>
+                        <a href="#codecs" class="toc-link block text-sm text-gray-300 hover:text-blue-400">60. codecs — Кодеки</a>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="lg:w-3/4 space-y-8">
+                
+                <!-- Section 1: os -->
+                <section id="os" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">1. os — Взаимодействие с операционной системой</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Информация о системе -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Информация о системе</h3>
+                            <p class="text-gray-300 mb-3">Получение информации о текущей операционной системе и переменных окружения.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import os
+
+# Получить название ОС (posix, nt, java)
+print(os.name)  # 'posix' на Linux/Mac, 'nt' на Windows
+
+# Получить все переменные окружения как словарь
+print(os.environ)
+
+# Получить конкретную переменную с дефолтным значением
+home_dir = os.getenv('HOME', '/default/path')
+path = os.getenv('PATH')
+
+# Установить переменную окружения
+os.environ['MY_VAR'] = 'my_value'
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При работе с конфигурацией приложения через переменные окружения, проверке типа ОС для платформозависимого кода.</p>
+                            </div>
+                        </div>
+
+                        <!-- Работа с директориями -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Работа с директориями</h3>
+                            <p class="text-gray-300 mb-3">Навигация и управление директориями в файловой системе.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import os
+
+# Получить текущую рабочую директорию
+current_dir = os.getcwd()
+print(f"Текущая директория: {current_dir}")
+
+# Изменить текущую директорию
+os.chdir('/tmp')
+
+# Получить список файлов и папок в директории
+files = os.listdir('.')
+print(files)
+
+# Создать одну директорию
+os.mkdir('new_folder')
+
+# Создать директорию со всеми родительскими папками
+os.makedirs('parent/child/grandchild', exist_ok=True)
+
+# Удалить пустую директорию
+os.rmdir('new_folder')
+
+# Рекурсивно удалить пустые директории
+os.removedirs('parent/child/grandchild')
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При создании структуры проектов, обработке файловых систем, автоматизации работы с директориями.</p>
+                            </div>
+                        </div>
+
+                        <!-- Работа с файлами -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Работа с файлами</h3>
+                            <p class="text-gray-300 mb-3">Операции с файлами: удаление, переименование, обход дерева директорий.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import os
+
+# Удалить файл
+os.remove('file.txt')
+
+# Переименовать файл или директорию
+os.rename('old_name.txt', 'new_name.txt')
+
+# Переименовать с перезаписью (работает кросс-платформенно)
+os.replace('source.txt', 'destination.txt')
+
+# Рекурсивно обойти дерево директорий
+for dirpath, dirnames, filenames in os.walk('/path/to/directory'):
+    print(f"Директория: {dirpath}")
+    print(f"Поддиректории: {dirnames}")
+    print(f"Файлы: {filenames}")
+    
+    # Обработать каждый файл
+    for filename in filenames:
+        full_path = os.path.join(dirpath, filename)
+        print(f"Обработка: {full_path}")
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При рефакторинге файловых структур, поиске файлов по критериям, массовом переименовании.</p>
+                            </div>
+                        </div>
+
+                        <!-- Права доступа и метаданные -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Права доступа и метаданные</h3>
+                            <p class="text-gray-300 mb-3">Получение и изменение метаданных файлов.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import os
+import stat
+
+# Получить метаданные файла
+file_stats = os.stat('file.txt')
+print(f"Размер: {file_stats.st_size} байт")
+print(f"Время создания: {file_stats.st_ctime}")
+print(f"Время модификации: {file_stats.st_mtime}")
+print(f"Время доступа: {file_stats.st_atime}")
+
+# Изменить права доступа (только Unix-подобные системы)
+# Дать права на чтение и запись владельцу
+os.chmod('file.txt', stat.S_IRUSR | stat.S_IWUSR)
+
+# Дать права 755 (rwxr-xr-x)
+os.chmod('script.sh', 0o755)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При проверке размера файлов перед обработкой, установке правильных прав доступа для скриптов.</p>
+                            </div>
+                        </div>
+
+                        <!-- Системные команды -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Системные команды</h3>
+                            <p class="text-gray-300 mb-3">Выполнение системных команд (рекомендуется использовать subprocess вместо os.system).</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import os
+
+# Выполнить системную команду (устарел, лучше использовать subprocess)
+exit_code = os.system('ls -la')
+print(f"Код возврата: {exit_code}")
+
+# Открыть файл с приложением по умолчанию (только Windows)
+if os.name == 'nt':
+    os.startfile('document.pdf')
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-yellow-900 bg-opacity-30 rounded border-l-4 border-yellow-500">
+                                <p class="text-sm text-gray-300"><strong>⚠️ Предупреждение:</strong> os.system() небезопасен для пользовательского ввода. Используйте subprocess.run() вместо этого.</p>
+                            </div>
+                        </div>
+
+                        <!-- os.path -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Путь к файлам (os.path)</h3>
+                            <p class="text-gray-300 mb-3">Работа с путями к файлам и директориям.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import os
+
+# Проверить существование файла/папки
+exists = os.path.exists('/path/to/file.txt')
+
+# Проверить, это файл
+is_file = os.path.isfile('/path/to/file.txt')
+
+# Проверить, это директория
+is_dir = os.path.isdir('/path/to/directory')
+
+# Объединить компоненты пути (кросс-платформенно)
+full_path = os.path.join('folder', 'subfolder', 'file.txt')
+
+# Разделить путь на директорию и имя файла
+directory, filename = os.path.split('/path/to/file.txt')
+
+# Получить директорию из пути
+directory = os.path.dirname('/path/to/file.txt')  # '/path/to'
+
+# Получить имя файла из пути
+filename = os.path.basename('/path/to/file.txt')  # 'file.txt'
+
+# Получить абсолютный путь
+abs_path = os.path.abspath('relative/path/file.txt')
+
+# Разделить имя файла и расширение
+name, ext = os.path.splitext('file.txt')  # ('file', '.txt')
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При построении путей кросс-платформенно, проверке существования файлов перед чтением, разборе путей.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: sys -->
+                <section id="sys" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">2. sys — Параметры и функции интерпретатора Python</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Аргументы командной строки -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Аргументы командной строки</h3>
+                            <p class="text-gray-300 mb-3">Доступ к аргументам, переданным скрипту при запуске.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import sys
+
+# sys.argv[0] - имя скрипта
+# sys.argv[1:] - аргументы командной строки
+print(f"Имя скрипта: {sys.argv[0]}")
+print(f"Аргументы: {sys.argv[1:]}")
+
+# Пример использования
+if len(sys.argv) < 2:
+    print("Использование: python script.py <filename>")
+    sys.exit(1)
+
+filename = sys.argv[1]
+print(f"Обработка файла: {filename}")
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Для простых CLI-скриптов. Для сложных CLI используйте argparse.</p>
+                            </div>
+                        </div>
+
+                        <!-- Информация об интерпретаторе -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Информация об интерпретаторе</h3>
+                            <p class="text-gray-300 mb-3">Получение информации о версии Python и платформе.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import sys
+
+# Строка с версией Python
+print(sys.version)  # '3.11.0 (main, Oct 24 2022, ...'
+
+# Кортеж с деталями версии
+print(sys.version_info)  # sys.version_info(major=3, minor=11, ...)
+print(f"Python {sys.version_info.major}.{sys.version_info.minor}")
+
+# Идентификатор платформы
+print(sys.platform)  # 'linux', 'darwin', 'win32'
+
+# Проверка версии Python
+if sys.version_info < (3, 8):
+    print("Требуется Python 3.8 или выше")
+    sys.exit(1)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При проверке совместимости версий, написании платформозависимого кода.</p>
+                            </div>
+                        </div>
+
+                        <!-- Пути и модули -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Пути и модули</h3>
+                            <p class="text-gray-300 mb-3">Управление путями поиска модулей и информацией о загруженных модулях.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import sys
+
+# Список путей для поиска модулей
+print(sys.path)
+
+# Добавить новый путь для поиска модулей
+sys.path.append('/custom/module/path')
+
+# Словарь загруженных модулей
+print(sys.modules.keys())
+
+# Проверить, загружен ли модуль
+if 'numpy' in sys.modules:
+    print("NumPy уже загружен")
+
+# Удалить модуль из кэша (для перезагрузки)
+if 'mymodule' in sys.modules:
+    del sys.modules['mymodule']
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При динамической загрузке модулей, отладке импортов, работе с плагинами.</p>
+                            </div>
+                        </div>
+
+                        <!-- Управление программой -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Управление программой</h3>
+                            <p class="text-gray-300 mb-3">Завершение программы и управление рекурсией.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import sys
+
+# Завершить программу с кодом возврата
+if error_occurred:
+    sys.exit(1)  # Код ошибки
+else:
+    sys.exit(0)  # Успешное завершение
+
+# Можно передать строку (будет выведена в stderr)
+sys.exit("Критическая ошибка!")
+
+# Получить максимальную глубину рекурсии
+limit = sys.getrecursionlimit()
+print(f"Лимит рекурсии: {limit}")
+
+# Установить максимальную глубину рекурсии
+sys.setrecursionlimit(2000)  # Осторожно! Может привести к краху
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-yellow-900 bg-opacity-30 rounded border-l-4 border-yellow-500">
+                                <p class="text-sm text-gray-300"><strong>⚠️ Предупреждение:</strong> Увеличение лимита рекурсии может привести к переполнению стека. Рассмотрите итеративное решение.</p>
+                            </div>
+                        </div>
+
+                        <!-- Потоки ввода-вывода -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Потоки ввода-вывода</h3>
+                            <p class="text-gray-300 mb-3">Перенаправление стандартных потоков.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import sys
+
+# Стандартный вывод
+sys.stdout.write("Привет, мир!\n")
+
+# Стандартный вывод ошибок
+sys.stderr.write("Ошибка!\n")
+
+# Стандартный ввод
+line = sys.stdin.readline()
+
+# Перенаправить stdout в файл
+original_stdout = sys.stdout
+with open('output.txt', 'w') as f:
+    sys.stdout = f
+    print("Это запишется в файл")
+    sys.stdout = original_stdout
+
+# Подавить вывод
+import os
+sys.stdout = open(os.devnull, 'w')
+print("Это не будет выведено")
+sys.stdout = sys.__stdout__  # Восстановить оригинальный stdout
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При перенаправлении вывода, написании тестов для CLI, подавлении вывода сторонних библиотек.</p>
+                            </div>
+                        </div>
+
+                        <!-- Лимиты -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Лимиты</h3>
+                            <p class="text-gray-300 mb-3">Системные ограничения.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import sys
+
+# Максимальное значение целого числа (зависит от платформы)
+print(sys.maxsize)  # 9223372036854775807 на 64-битной системе
+
+# Проверить, 64-битная ли система
+is_64bit = sys.maxsize > 2**32
+print(f"64-битная система: {is_64bit}")
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При проверке архитектуры системы, работе с большими целыми числами.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: json -->
+                <section id="json" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">3. json — Сериализация и десериализация JSON</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Кодирование -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Кодирование в JSON</h3>
+                            <p class="text-gray-300 mb-3">Преобразование объектов Python в JSON-строки и файлы.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import json
+
+# Данные Python
+data = {
+    "name": "Иван",
+    "age": 30,
+    "skills": ["Python", "JavaScript"],
+    "is_active": True,
+    "balance": None
+}
+
+# Преобразовать в JSON-строку
+json_string = json.dumps(data)
+print(json_string)
+
+# Красивое форматирование с отступами
+json_formatted = json.dumps(data, indent=4, ensure_ascii=False)
+print(json_formatted)
+
+# Записать в файл
+with open('data.json', 'w', encoding='utf-8') as f:
+    json.dump(data, f, indent=4, ensure_ascii=False)
+
+# Сортировка ключей
+json_sorted = json.dumps(data, sort_keys=True, indent=2)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При создании API, сохранении конфигураций, обмене данными между приложениями.</p>
+                            </div>
+                        </div>
+
+                        <!-- Декодирование -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Декодирование из JSON</h3>
+                            <p class="text-gray-300 mb-3">Преобразование JSON в объекты Python.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import json
+
+# JSON-строка
+json_string = '{"name": "Иван", "age": 30, "skills": ["Python"]}'
+
+# Преобразовать JSON-строку в Python объект
+data = json.loads(json_string)
+print(data['name'])  # 'Иван'
+print(type(data))    # <class 'dict'>
+
+# Прочитать из файла
+with open('data.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)
+    print(data)
+
+# Обработка ошибок
+try:
+    invalid_json = '{"name": "Иван", age: 30}'  # Невалидный JSON
+    data = json.loads(invalid_json)
+except json.JSONDecodeError as e:
+    print(f"Ошибка парсинга JSON: {e}")
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При работе с REST API, чтении конфигурационных файлов, обработке JSON-данных.</p>
+                            </div>
+                        </div>
+
+                        <!-- Кастомизация -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Кастомное кодирование</h3>
+                            <p class="text-gray-300 mb-3">Сериализация пользовательских объектов.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import json
+from datetime import datetime
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
+
+# Использование кастомного энкодера
+data = {
+    "event": "Meeting",
+    "timestamp": datetime.now()
+}
+
+json_string = json.dumps(data, cls=DateTimeEncoder, indent=2)
+print(json_string)
+
+# Альтернативный способ через функцию
+def datetime_handler(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+
+json_string = json.dumps(data, default=datetime_handler, indent=2)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При сериализации datetime, Decimal, пользовательских классов.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 4: datetime -->
+                <section id="datetime" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">4. datetime — Работа с датами и временем</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Основные классы -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Основные классы</h3>
+                            <p class="text-gray-300 mb-3">Создание объектов дат и времени.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from datetime import datetime, date, time, timedelta, timezone
+
+# Текущая дата и время
+now = datetime.now()
+print(now)
+
+# Только дата
+today = date.today()
+print(today)
+
+# Создать конкретную дату
+birthday = date(1990, 5, 15)
+print(birthday)
+
+# Создать конкретное время
+meeting_time = time(14, 30, 0)
+print(meeting_time)
+
+# Создать конкретную дату и время
+event = datetime(2025, 12, 31, 23, 59, 59)
+print(event)
+
+# Разница между датами (timedelta)
+difference = now - event
+print(f"До Нового года: {difference.days} дней")
+
+# Добавить/вычесть время
+tomorrow = today + timedelta(days=1)
+next_week = now + timedelta(weeks=1)
+hour_ago = now - timedelta(hours=1)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Для любых операций с датами и временем - логирование, планирование, вычисление периодов.</p>
+                            </div>
+                        </div>
+
+                        <!-- Методы для получения текущего времени -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Получение текущего времени</h3>
+                            <p class="text-gray-300 mb-3">Различные способы получения текущих даты и времени.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from datetime import datetime, timezone
+
+# Локальное время
+local_now = datetime.now()
+print(f"Локальное время: {local_now}")
+
+# Альтернатива (то же самое)
+today = datetime.today()
+print(f"Сегодня: {today}")
+
+# UTC время
+utc_now = datetime.now(timezone.utc)
+print(f"UTC время: {utc_now}")
+
+# Устаревший способ (без информации о timezone)
+utc_old = datetime.utcnow()  # Не рекомендуется
+print(f"UTC (старый способ): {utc_old}")
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Используйте datetime.now(timezone.utc) для работы с UTC, datetime.now() для локального времени.</p>
+                            </div>
+                        </div>
+
+                        <!-- Создание из различных форматов -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Создание из различных форматов</h3>
+                            <p class="text-gray-300 mb-3">Парсинг строк и timestamp в объекты datetime.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from datetime import datetime, date, time
+import time as time_module
+
+# Из timestamp (секунды с 1970-01-01)
+timestamp = 1735689599
+dt = datetime.fromtimestamp(timestamp)
+print(dt)
+
+# Из строки с указанным форматом
+date_string = "2025-12-31 23:59:59"
+dt = datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+print(dt)
+
+# Различные форматы строк
+date1 = datetime.strptime("31/12/2025", "%d/%m/%Y")
+date2 = datetime.strptime("Dec 31, 2025", "%b %d, %Y")
+date3 = datetime.strptime("2025-12-31T23:59:59", "%Y-%m-%dT%H:%M:%S")
+
+# Объединить date и time
+d = date(2025, 12, 31)
+t = time(23, 59, 59)
+dt = datetime.combine(d, t)
+print(dt)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При парсинге дат из API, логов, пользовательского ввода.</p>
+                            </div>
+                        </div>
+
+                        <!-- Форматирование -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Форматирование дат</h3>
+                            <p class="text-gray-300 mb-3">Преобразование datetime в строки различных форматов.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from datetime import datetime
+
+now = datetime.now()
+
+# Форматирование с помощью strftime
+print(now.strftime("%Y-%m-%d"))           # 2025-01-15
+print(now.strftime("%d/%m/%Y"))           # 15/01/2025
+print(now.strftime("%B %d, %Y"))          # January 15, 2025
+print(now.strftime("%A, %d %B %Y"))       # Wednesday, 15 January 2025
+print(now.strftime("%H:%M:%S"))           # 14:30:45
+print(now.strftime("%I:%M %p"))           # 02:30 PM
+print(now.strftime("%Y-%m-%d %H:%M:%S"))  # 2025-01-15 14:30:45
+
+# ISO формат
+iso_string = now.isoformat()
+print(iso_string)  # 2025-01-15T14:30:45.123456
+
+# Преобразовать в struct_time
+time_tuple = now.timetuple()
+print(time_tuple)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При выводе дат для пользователя, создании имен файлов с датой, логировании.</p>
+                            </div>
+                        </div>
+
+                        <!-- Компоненты даты -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Компоненты даты и времени</h3>
+                            <p class="text-gray-300 mb-3">Извлечение отдельных компонентов из datetime.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from datetime import datetime
+
+now = datetime.now()
+
+# Компоненты даты
+print(f"Год: {now.year}")
+print(f"Месяц: {now.month}")
+print(f"День: {now.day}")
+
+# Компоненты времени
+print(f"Час: {now.hour}")
+print(f"Минута: {now.minute}")
+print(f"Секунда: {now.second}")
+print(f"Микросекунда: {now.microsecond}")
+
+# День недели (0=Пн, 6=Вс)
+weekday = now.weekday()
+print(f"День недели: {weekday}")
+
+# День недели (1=Пн, 7=Вс)
+iso_weekday = now.isoweekday()
+print(f"ISO день недели: {iso_weekday}")
+
+# Названия дней недели
+days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+print(f"Сегодня: {days[now.weekday()]}")
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> При фильтрации по компонентам даты, создании отчетов, анализе временных данных.</p>
+                            </div>
+                        </div>
+
+                        <!-- Коды форматирования -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Коды форматирования (strftime/strptime)</h3>
+                            <p class="text-gray-300 mb-3">Справочник по основным кодам форматирования.</p>
+                            <div class="bg-gray-800 rounded-lg p-4">
+                                <table class="w-full text-sm text-gray-300">
+                                    <thead>
+                                        <tr class="border-b border-gray-600">
+                                            <th class="text-left py-2">Код</th>
+                                            <th class="text-left py-2">Описание</th>
+                                            <th class="text-left py-2">Пример</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%Y</td>
+                                            <td class="py-2">Год с веком</td>
+                                            <td class="py-2">2025</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%m</td>
+                                            <td class="py-2">Месяц (01-12)</td>
+                                            <td class="py-2">01</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%d</td>
+                                            <td class="py-2">День месяца (01-31)</td>
+                                            <td class="py-2">15</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%H</td>
+                                            <td class="py-2">Час 24-часовой (00-23)</td>
+                                            <td class="py-2">14</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%I</td>
+                                            <td class="py-2">Час 12-часовой (01-12)</td>
+                                            <td class="py-2">02</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%M</td>
+                                            <td class="py-2">Минута (00-59)</td>
+                                            <td class="py-2">30</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%S</td>
+                                            <td class="py-2">Секунда (00-59)</td>
+                                            <td class="py-2">45</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%A</td>
+                                            <td class="py-2">Полное имя дня недели</td>
+                                            <td class="py-2">Wednesday</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%a</td>
+                                            <td class="py-2">Сокращённое имя дня недели</td>
+                                            <td class="py-2">Wed</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%B</td>
+                                            <td class="py-2">Полное имя месяца</td>
+                                            <td class="py-2">January</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">%b</td>
+                                            <td class="py-2">Сокращённое имя месяца</td>
+                                            <td class="py-2">Jan</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-mono text-yellow-400">%p</td>
+                                            <td class="py-2">AM/PM</td>
+                                            <td class="py-2">PM</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 5: re -->
+                <section id="re" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">5. re — Регулярные выражения</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Поиск -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Функции поиска</h3>
+                            <p class="text-gray-300 mb-3">Поиск совпадений в строках.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import re
+
+text = "Мой email: user@example.com, телефон: +7-123-456-78-90"
+
+# match - ищет в начале строки
+match = re.match(r'\w+', text)
+if match:
+    print(match.group())  # 'Мой'
+
+# search - ищет первое совпадение в любом месте
+email_match = re.search(r'[\w\.-]+@[\w\.-]+', text)
+if email_match:
+    print(f"Email: {email_match.group()}")  # user@example.com
+
+# findall - находит все совпадения (возвращает список)
+numbers = re.findall(r'\d+', text)
+print(f"Числа: {numbers}")  # ['7', '123', '456', '78', '90']
+
+# finditer - возвращает итератор совпадений
+for match in re.finditer(r'\d+', text):
+    print(f"Найдено: {match.group()} на позиции {match.start()}")
+
+# Проверить, содержит ли строка паттерн
+if re.search(r'email', text):
+    print("Строка содержит слово 'email'")
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Валидация email, телефонов, извлечение данных из текста, парсинг логов.</p>
+                            </div>
+                        </div>
+
+                        <!-- Замена -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Замена и разделение</h3>
+                            <p class="text-gray-300 mb-3">Замена совпадений и разделение строк.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import re
+
+text = "Контакты: user@example.com, admin@test.org"
+
+# Заменить все совпадения
+masked = re.sub(r'[\w\.-]+@[\w\.-]+', '[EMAIL]', text)
+print(masked)  # "Контакты: [EMAIL], [EMAIL]"
+
+# Заменить с функцией обработки
+def mask_email(match):
+    email = match.group()
+    name, domain = email.split('@')
+    return f"{name[0]}***@{domain}"
+
+masked = re.sub(r'[\w\.-]+@[\w\.-]+', mask_email, text)
+print(masked)  # "Контакты: u***@example.com, a***@test.org"
+
+# subn - возвращает кортеж (новая_строка, количество_замен)
+result, count = re.subn(r'\d+', 'X', "12 яблок и 5 груш")
+print(f"{result} ({count} замен)")  # "X яблок и X груш (2 замен)"
+
+# Разделить строку по паттерну
+parts = re.split(r'[,\s]+', "яблоко, груша  банан,апельсин")
+print(parts)  # ['яблоко', 'груша', 'банан', 'апельсин']
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Очистка данных, маскирование информации, парсинг нестандартных форматов.</p>
+                            </div>
+                        </div>
+
+                        <!-- Компиляция -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Компиляция и флаги</h3>
+                            <p class="text-gray-300 mb-3">Оптимизация через компиляцию и использование флагов.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import re
+
+# Скомпилировать регулярное выражение для переиспользования
+email_pattern = re.compile(r'[\w\.-]+@[\w\.-]+\.\w+')
+
+# Использовать скомпилированный паттерн
+text = "Контакты: user@example.com, admin@test.org"
+emails = email_pattern.findall(text)
+print(emails)
+
+# Флаги
+# re.IGNORECASE (re.I) - игнорировать регистр
+result = re.findall(r'python', 'Python PYTHON python', re.IGNORECASE)
+print(result)  # ['Python', 'PYTHON', 'python']
+
+# re.MULTILINE (re.M) - ^ и $ работают для каждой строки
+text = "line1\nline2\nline3"
+lines = re.findall(r'^line\d+', text, re.MULTILINE)
+print(lines)  # ['line1', 'line2', 'line3']
+
+# re.DOTALL (re.S) - точка включает \n
+text = "start\nmiddle\nend"
+match = re.search(r'start.+end', text, re.DOTALL)
+print(match.group())  # 'start\nmiddle\nend'
+
+# Комбинация флагов
+pattern = re.compile(r'test', re.IGNORECASE | re.MULTILINE)
+
+# Экранировать специальные символы
+escaped = re.escape("test@example.com (важно!)")
+print(escaped)  # 'test\@example\.com\ \(важно\!\)'
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Компилируйте паттерны при многократном использовании. Флаги упрощают работу с многострочным текстом.</p>
+                            </div>
+                        </div>
+
+                        <!-- Паттерны -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Основные паттерны</h3>
+                            <p class="text-gray-300 mb-3">Справочник по базовым паттернам регулярных выражений.</p>
+                            <div class="bg-gray-800 rounded-lg p-4">
+                                <table class="w-full text-sm text-gray-300">
+                                    <thead>
+                                        <tr class="border-b border-gray-600">
+                                            <th class="text-left py-2">Паттерн</th>
+                                            <th class="text-left py-2">Описание</th>
+                                            <th class="text-left py-2">Пример</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">\d</td>
+                                            <td class="py-2">Любая цифра [0-9]</td>
+                                            <td class="py-2 font-mono">\d+ → "123"</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">\w</td>
+                                            <td class="py-2">Буква, цифра, _</td>
+                                            <td class="py-2 font-mono">\w+ → "abc123"</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">\s</td>
+                                            <td class="py-2">Пробельный символ</td>
+                                            <td class="py-2 font-mono">\s+ → "   "</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">.</td>
+                                            <td class="py-2">Любой символ (кроме \n)</td>
+                                            <td class="py-2 font-mono">a.c → "abc"</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">*</td>
+                                            <td class="py-2">0 или более повторений</td>
+                                            <td class="py-2 font-mono">ab*c → "ac", "abc"</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">+</td>
+                                            <td class="py-2">1 или более повторений</td>
+                                            <td class="py-2 font-mono">ab+c → "abc", "abbc"</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">?</td>
+                                            <td class="py-2">0 или 1 повторение</td>
+                                            <td class="py-2 font-mono">colou?r → "color", "colour"</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">{n,m}</td>
+                                            <td class="py-2">От n до m повторений</td>
+                                            <td class="py-2 font-mono">\d{2,4} → "12", "1234"</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">[...]</td>
+                                            <td class="py-2">Набор символов</td>
+                                            <td class="py-2 font-mono">[aeiou] → гласные</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">(...)</td>
+                                            <td class="py-2">Группа захвата</td>
+                                            <td class="py-2 font-mono">(\d+)-(\d+) → "12-34"</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">|</td>
+                                            <td class="py-2">Альтернация (ИЛИ)</td>
+                                            <td class="py-2 font-mono">cat|dog → "cat" или "dog"</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="py-2 font-mono text-yellow-400">^</td>
+                                            <td class="py-2">Начало строки</td>
+                                            <td class="py-2 font-mono">^Hello → начинается с "Hello"</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-mono text-yellow-400">$</td>
+                                            <td class="py-2">Конец строки</td>
+                                            <td class="py-2 font-mono">end$ → заканчивается на "end"</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Группы захвата -->
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Группы захвата</h3>
+                            <p class="text-gray-300 mb-3">Извлечение частей совпадений.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import re
+
+# Извлечь части email
+email = "user@example.com"
+match = re.search(r'(\w+)@([\w\.]+)', email)
+if match:
+    print(f"Имя: {match.group(1)}")    # user
+    print(f"Домен: {match.group(2)}")  # example.com
+    print(f"Весь email: {match.group(0)}")  # user@example.com
+
+# Именованные группы
+pattern = r'(?P<name>\w+)@(?P<domain>[\w\.]+)'
+match = re.search(pattern, email)
+if match:
+    print(match.group('name'))    # user
+    print(match.group('domain'))  # example.com
+    print(match.groupdict())      # {'name': 'user', 'domain': 'example.com'}
+
+# Извлечь все совпадения с группами
+text = "John: 30, Alice: 25, Bob: 35"
+matches = re.findall(r'(\w+): (\d+)', text)
+for name, age in matches:
+    print(f"{name} - {age} лет")
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Парсинг структурированного текста, извлечение отдельных компонентов данных.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Continue with remaining sections... Due to length constraints, I'll provide a condensed version -->
+                
+                <!-- Section 6: collections -->
+                <section id="collections" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">6. collections — Специализированные контейнеры</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">namedtuple</h3>
+                            <p class="text-gray-300 mb-3">Кортеж с именованными полями для лучшей читаемости кода.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from collections import namedtuple
+
+# Создать namedtuple
+Point = namedtuple('Point', ['x', 'y'])
+p = Point(10, 20)
+print(f"x={p.x}, y={p.y}")  # x=10, y=20
+
+# Можно передать строку с именами полей
+Person = namedtuple('Person', 'name age city')
+person = Person('Иван', 30, 'Москва')
+print(f"{person.name}, {person.age} лет, {person.city}")
+
+# namedtuple неизменяемый (immutable)
+# person.age = 31  # Ошибка!
+
+# Создать новый с изменёнными значениями
+person2 = person._replace(age=31)
+print(person2)
+
+# Преобразовать в словарь
+print(person._asdict())  # {'name': 'Иван', 'age': 30, 'city': 'Москва'}
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Вместо обычных кортежей для улучшения читаемости, легковесная альтернатива классам.</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">deque</h3>
+                            <p class="text-gray-300 mb-3">Двусторонняя очередь с быстрыми операциями на концах.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from collections import deque
+
+# Создать deque
+d = deque([1, 2, 3])
+
+# Добавить в конец
+d.append(4)           # deque([1, 2, 3, 4])
+
+# Добавить в начало
+d.appendleft(0)       # deque([0, 1, 2, 3, 4])
+
+# Удалить с конца
+d.pop()               # deque([0, 1, 2, 3])
+
+# Удалить с начала
+d.popleft()           # deque([1, 2, 3])
+
+# Расширить справа
+d.extend([4, 5])      # deque([1, 2, 3, 4, 5])
+
+# Расширить слева
+d.extendleft([0, -1]) # deque([-1, 0, 1, 2, 3, 4, 5])
+
+# Ротация
+d.rotate(2)           # Сдвинуть вправо на 2
+d.rotate(-1)          # Сдвинуть влево на 1
+
+# Ограниченная deque (циклический буфер)
+limited = deque(maxlen=3)
+for i in range(5):
+    limited.append(i)
+print(limited)  # deque([2, 3, 4], maxlen=3)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Очереди, стеки, циклические буферы, скользящие окна.</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Counter</h3>
+                            <p class="text-gray-300 mb-3">Подсчёт элементов в последовательности.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from collections import Counter
+
+# Подсчитать элементы
+words = ['apple', 'banana', 'apple', 'cherry', 'banana', 'apple']
+counter = Counter(words)
+print(counter)  # Counter({'apple': 3, 'banana': 2, 'cherry': 1})
+
+# Получить количество
+print(counter['apple'])  # 3
+print(counter['grape'])  # 0 (не выбрасывает ошибку)
+
+# Самые частые элементы
+print(counter.most_common(2))  # [('apple', 3), ('banana', 2)]
+
+# Подсчитать символы в строке
+text = "hello world"
+char_count = Counter(text)
+print(char_count)  # Counter({'l': 3, 'o': 2, 'h': 1, ...})
+
+# Арифметика с Counter
+c1 = Counter(['a', 'b', 'c', 'a'])
+c2 = Counter(['a', 'b', 'd'])
+print(c1 + c2)  # Сложение
+print(c1 - c2)  # Вычитание (только положительные)
+print(c1 & c2)  # Пересечение (минимум)
+print(c1 | c2)  # Объединение (максимум)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Подсчёт частоты слов, анализ данных, статистика.</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">defaultdict</h3>
+                            <p class="text-gray-300 mb-3">Словарь с дефолтными значениями для несуществующих ключей.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from collections import defaultdict
+
+# defaultdict со списками
+groups = defaultdict(list)
+groups['fruits'].append('apple')
+groups['fruits'].append('banana')
+groups['vegetables'].append('carrot')
+print(dict(groups))  # {'fruits': ['apple', 'banana'], 'vegetables': ['carrot']}
+
+# defaultdict с int (счётчик)
+counter = defaultdict(int)
+for word in ['apple', 'banana', 'apple']:
+    counter[word] += 1
+print(dict(counter))  # {'apple': 2, 'banana': 1}
+
+# defaultdict с set
+tags = defaultdict(set)
+tags['post1'].add('python')
+tags['post1'].add('coding')
+tags['post2'].add('python')
+print(dict(tags))
+
+# Пользовательская дефолтная функция
+def default_value():
+    return 'Unknown'
+
+dd = defaultdict(default_value)
+print(dd['name'])  # 'Unknown'
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Группировка данных, избежание проверок на существование ключа.</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">OrderedDict и ChainMap</h3>
+                            <p class="text-gray-300 mb-3">Упорядоченный словарь и объединение словарей.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from collections import OrderedDict, ChainMap
+
+# OrderedDict сохраняет порядок (в Python 3.7+ обычный dict тоже это делает)
+od = OrderedDict()
+od['c'] = 3
+od['a'] = 1
+od['b'] = 2
+print(od)  # OrderedDict([('c', 3), ('a', 1), ('b', 2)])
+
+# Переместить элемент в конец
+od.move_to_end('a')
+print(od)  # OrderedDict([('c', 3), ('b', 2), ('a', 1)])
+
+# ChainMap - объединение нескольких словарей
+defaults = {'color': 'red', 'user': 'guest'}
+environ = {'user': 'admin'}
+combined = ChainMap(environ, defaults)
+
+print(combined['user'])   # 'admin' (из environ)
+print(combined['color'])  # 'red' (из defaults)
+
+# Изменения применяются к первому словарю
+combined['page'] = 1
+print(environ)  # {'user': 'admin', 'page': 1}
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> ChainMap для конфигураций с приоритетами (аргументы → переменные окружения → дефолты).</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 7: subprocess -->
+                <section id="subprocess" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">7. subprocess — Запуск внешних процессов</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Запуск процессов</h3>
+                            <p class="text-gray-300 mb-3">Выполнение внешних команд безопасно.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import subprocess
+
+# Запустить команду и дождаться завершения (рекомендуемый способ)
+result = subprocess.run(['ls', '-la'], capture_output=True, text=True)
+print(result.stdout)
+print(f"Код возврата: {result.returncode}")
+
+# С таймаутом и проверкой ошибок
+try:
+    result = subprocess.run(
+        ['ping', '-c', '3', 'google.com'],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=True  # Выбросит исключение при ненулевом коде
+    )
+    print(result.stdout)
+except subprocess.TimeoutExpired:
+    print("Команда превысила таймаут")
+except subprocess.CalledProcessError as e:
+    print(f"Команда вернула код {e.returncode}")
+    print(e.stderr)
+
+# Передача ввода в процесс
+result = subprocess.run(
+    ['grep', 'python'],
+    input='python is awesome\njava is ok\npython rocks',
+    capture_output=True,
+    text=True
+)
+print(result.stdout)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Автоматизация системных задач, вызов внешних утилит, интеграция с CLI-инструментами.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 8: pathlib -->
+                <section id="pathlib" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">8. pathlib — Объектно-ориентированная работа с путями</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Работа с Path</h3>
+                            <p class="text-gray-300 mb-3">Современный способ работы с путями.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">from pathlib import Path
+
+# Создать объект Path
+path = Path('/home/user/documents/file.txt')
+
+# Текущая и домашняя директория
+current = Path.cwd()
+home = Path.home()
+
+# Компоненты пути
+print(path.parent)      # /home/user/documents
+print(path.name)        # file.txt
+print(path.stem)        # file
+print(path.suffix)      # .txt
+print(path.parts)       # ('/', 'home', 'user', 'documents', 'file.txt')
+
+# Объединение путей
+config_file = Path.home() / '.config' / 'app' / 'settings.json'
+
+# Проверки
+if path.exists():
+    print("Файл существует")
+if path.is_file():
+    print("Это файл")
+if path.is_dir():
+    print("Это директория")
+
+# Чтение и запись
+path.write_text('Hello, World!')
+content = path.read_text()
+
+# Работа с директориями
+dir_path = Path('/tmp/myapp')
+dir_path.mkdir(parents=True, exist_ok=True)
+
+# Итерация по файлам
+for file in dir_path.iterdir():
+    print(file)
+
+# Поиск по паттерну
+for py_file in Path('.').glob('*.py'):
+    print(py_file)
+
+# Рекурсивный поиск
+for py_file in Path('.').rglob('*.py'):
+    print(py_file)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Предпочитайте pathlib над os.path для нового кода - более читаемо и удобно.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 9: logging -->
+                <section id="logging" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">9. logging — Логирование событий приложения</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Базовое логирование</h3>
+                            <p class="text-gray-300 mb-3">Настройка и использование логгера.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import logging
+
+# Базовая конфигурация
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename='app.log'
+)
+
+# Создать логгер
+logger = logging.getLogger(__name__)
+
+# Различные уровни логирования
+logger.debug("Отладочная информация")
+logger.info("Информационное сообщение")
+logger.warning("Предупреждение")
+logger.error("Ошибка")
+logger.critical("Критическая ошибка")
+
+# Логирование с дополнительными данными
+user_id = 12345
+logger.info(f"Пользователь {user_id} вошел в систему")
+
+# Логирование исключений
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    logger.exception("Ошибка деления на ноль")
+
+# Продвинутая конфигурация
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[
+        logging.FileHandler('app.log'),
+        logging.StreamHandler()  # Вывод в консоль
+    ]
+)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Всегда используйте logging вместо print для production-кода.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 10: random -->
+                <section id="random" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">10. random — Генерация псевдослучайных чисел</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Работа со случайными числами</h3>
+                            <p class="text-gray-300 mb-3">Генерация случайных значений.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import random
+
+# Случайное вещественное число [0.0, 1.0)
+print(random.random())
+
+# Случайное целое число [a, b]
+dice = random.randint(1, 6)
+print(f"Выпало: {dice}")
+
+# Случайное вещественное число в диапазоне
+temperature = random.uniform(20.0, 30.0)
+print(f"Температура: {temperature:.1f}°C")
+
+# Выбрать случайный элемент
+colors = ['red', 'green', 'blue', 'yellow']
+color = random.choice(colors)
+
+# Выбрать несколько элементов с повторениями
+choices = random.choices(colors, k=5)
+
+# Выбрать уникальные элементы
+sample = random.sample(colors, k=2)
+
+# Перемешать список на месте
+random.shuffle(colors)
+
+# Установить seed для воспроизводимости
+random.seed(42)
+print(random.random())  # Всегда один результат
+random.seed(42)
+print(random.random())  # Тот же результат
+
+# Нормальное распределение (среднее, стандартное отклонение)
+height = random.gauss(170, 10)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-yellow-900 bg-opacity-30 rounded border-l-4 border-yellow-500">
+                                <p class="text-sm text-gray-300"><strong>⚠️ Важно:</strong> Не используйте random для криптографии! Используйте secrets для безопасных случайных чисел.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sections 11-60 continue... Due to length, I'll add a representative sample -->
+                <!-- Section 11: math -->
+                <section id="math" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">11. math — Математические функции</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2 text-green-400">Математические операции</h3>
+                            <p class="text-gray-300 mb-3">Базовые и продвинутые математические функции.</p>
+                            <div class="bg-gray-900 rounded-lg overflow-hidden">
+                                <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                    <span class="text-sm text-gray-400">Python</span>
+                                    <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                                </div>
+                                <pre><code class="language-python">import math
+
+# Константы
+print(math.pi)    # 3.141592653589793
+print(math.e)     # 2.718281828459045
+print(math.tau)   # 6.283185307179586 (2π)
+print(math.inf)   # бесконечность
+
+# Округление
+print(math.ceil(4.3))   # 5 (вверх)
+print(math.floor(4.7))  # 4 (вниз)
+
+# Базовые функции
+print(math.sqrt(16))     # 4.0
+print(math.pow(2, 3))    # 8.0
+print(math.fabs(-5))     # 5.0
+
+# Тригонометрия (радианы)
+print(math.sin(math.pi / 2))   # 1.0
+print(math.cos(0))             # 1.0
+print(math.tan(math.pi / 4))   # 1.0
+
+# Обратные тригонометрические
+print(math.asin(1))  # π/2
+print(math.acos(1))  # 0
+print(math.atan(1))  # π/4
+
+# Логарифмы
+print(math.log(math.e))    # 1.0 (ln)
+print(math.log10(100))     # 2.0
+print(math.log2(8))        # 3.0
+print(math.exp(1))         # e
+
+# Дополнительные функции
+print(math.factorial(5))   # 120
+print(math.gcd(48, 18))    # 6 (НОД)
+print(math.degrees(math.pi))  # 180.0 (радианы в градусы)
+print(math.radians(180))      # π (градусы в радианы)
+</code></pre>
+                            </div>
+                            <div class="mt-3 p-3 bg-blue-900 bg-opacity-30 rounded border-l-4 border-blue-500">
+                                <p class="text-sm text-gray-300"><strong>Когда использовать:</strong> Научные вычисления, инженерные расчёты, геометрия.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sections 12-60 with full implementations -->
+                
+                <section id="string" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">12. string — Константы и утилиты для строк</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import string
+
+# Предопределённые строки
+print(string.ascii_letters)    # abcdefghijklmnopqrstuvwxyzABC...
+print(string.ascii_lowercase)  # abcdefghijklmnopqrstuvwxyz
+print(string.ascii_uppercase)  # ABCDEFGHIJKLMNOPQRSTUVWXYZ
+print(string.digits)           # 0123456789
+print(string.punctuation)      # !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+print(string.whitespace)       # пробел, табуляция, новая строка и т.д.
+
+# Шаблоны
+from string import Template
+template = Template('Привет, $name! Сегодня $day.')
+result = template.substitute(name='Иван', day='понедельник')
+print(result)
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="itertools" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">13. itertools — Функции для создания итераторов</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import itertools
+
+# Бесконечные итераторы
+counter = itertools.count(start=1, step=2)  # 1, 3, 5, 7, ...
+cycler = itertools.cycle(['A', 'B', 'C'])   # A, B, C, A, B, C, ...
+repeater = itertools.repeat('X', times=3)   # X, X, X
+
+# Комбинаторные итераторы
+list(itertools.combinations([1, 2, 3], 2))      # [(1, 2), (1, 3), (2, 3)]
+list(itertools.permutations([1, 2, 3], 2))      # [(1, 2), (1, 3), (2, 1), ...]
+list(itertools.product([1, 2], ['a', 'b']))     # [(1,'a'), (1,'b'), (2,'a'), (2,'b')]
+
+# Полезные итераторы
+list(itertools.chain([1, 2], [3, 4]))          # [1, 2, 3, 4]
+list(itertools.islice(range(10), 2, 7, 2))     # [2, 4, 6]
+list(itertools.accumulate([1, 2, 3, 4]))       # [1, 3, 6, 10]
+
+# Группировка
+data = [('A', 1), ('A', 2), ('B', 1), ('B', 2)]
+for key, group in itertools.groupby(data, lambda x: x[0]):
+    print(f"{key}: {list(group)}")
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="functools" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">14. functools — Функции высшего порядка</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from functools import lru_cache, partial, reduce, wraps
+
+# Кэширование результатов (memoization)
+@lru_cache(maxsize=128)
+def fibonacci(n):
+    if n < 2:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+# Частичное применение аргументов
+def multiply(x, y):
+    return x * y
+double = partial(multiply, 2)
+print(double(5))  # 10
+
+# Reduce - применить функцию кумулятивно
+numbers = [1, 2, 3, 4, 5]
+total = reduce(lambda x, y: x + y, numbers)  # 15
+
+# Сохранение метаданных при создании декораторов
+def my_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print("Before")
+        result = func(*args, **kwargs)
+        print("After")
+        return result
+    return wrapper
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="copy" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">15. copy — Копирование объектов</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import copy
+
+# Поверхностная копия (копирует только верхний уровень)
+original = [[1, 2, 3], [4, 5, 6]]
+shallow = copy.copy(original)
+shallow[0][0] = 999
+print(original[0][0])  # 999 - изменение влияет на оригинал!
+
+# Глубокая копия (копирует все вложенные объекты)
+original = [[1, 2, 3], [4, 5, 6]]
+deep = copy.deepcopy(original)
+deep[0][0] = 999
+print(original[0][0])  # 1 - оригинал не изменился
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="pickle" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">16. pickle — Сериализация объектов Python</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import pickle
+
+# Данные
+data = {'name': 'Alice', 'age': 30, 'scores': [95, 87, 92]}
+
+# Сериализация в байты
+pickled = pickle.dumps(data)
+
+# Десериализация из байтов
+unpickled = pickle.loads(pickled)
+
+# Сериализация в файл
+with open('data.pkl', 'wb') as f:
+    pickle.dump(data, f)
+
+# Десериализация из файла
+with open('data.pkl', 'rb') as f:
+    loaded = pickle.load(f)
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="urllib" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">17. urllib — Работа с URL</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from urllib import request, parse, error
+
+# Открыть и прочитать URL
+try:
+    response = request.urlopen('https://api.github.com')
+    html = response.read().decode('utf-8')
+    print(html[:100])
+except error.URLError as e:
+    print(f"Ошибка: {e}")
+
+# Парсинг URL
+url = 'https://example.com:8080/path?key=value#fragment'
+parsed = parse.urlparse(url)
+print(parsed.scheme)   # https
+print(parsed.netloc)   # example.com:8080
+print(parsed.path)     # /path
+print(parsed.query)    # key=value
+
+# Кодирование параметров
+params = {'q': 'python programming', 'lang': 'ru'}
+query_string = parse.urlencode(params)
+print(query_string)  # q=python+programming&lang=ru
+
+# Кодирование строки для URL
+encoded = parse.quote('Hello World!')
+print(encoded)  # Hello%20World%21
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="tempfile" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">18. tempfile — Создание временных файлов</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import tempfile
+
+# Временный файл (автоматически удаляется)
+with tempfile.NamedTemporaryFile(mode='w+', delete=True) as tf:
+    tf.write('Временные данные')
+    tf.seek(0)
+    print(tf.read())
+    print(f"Файл: {tf.name}")
+
+# Временная директория
+with tempfile.TemporaryDirectory() as tmpdir:
+    print(f"Временная директория: {tmpdir}")
+    # Работа с файлами в tmpdir
+    # Директория удалится автоматически
+
+# Получить путь к временной директории системы
+print(tempfile.gettempdir())
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="shutil" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">19. shutil — Высокоуровневые файловые операции</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import shutil
+
+# Копировать файл
+shutil.copy('source.txt', 'destination.txt')
+shutil.copy2('source.txt', 'dest.txt')  # с метаданными
+
+# Рекурсивно копировать директорию
+shutil.copytree('source_dir', 'dest_dir')
+
+# Переместить файл или директорию
+shutil.move('old_location', 'new_location')
+
+# Рекурсивно удалить директорию
+shutil.rmtree('directory_to_remove')
+
+# Создать архив
+shutil.make_archive('archive_name', 'zip', 'directory_to_archive')
+
+# Распаковать архив
+shutil.unpack_archive('archive.zip', 'extract_to_dir')
+
+# Получить информацию о диске
+total, used, free = shutil.disk_usage('/')
+print(f"Свободно: {free // (2**30)} GB")
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="zipfile" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">20. zipfile — Работа с ZIP-архивами</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import zipfile
+
+# Создать ZIP-архив
+with zipfile.ZipFile('archive.zip', 'w') as zipf:
+    zipf.write('file1.txt')
+    zipf.write('file2.txt')
+    zipf.writestr('readme.txt', 'Содержимое файла')
+
+# Прочитать ZIP-архив
+with zipfile.ZipFile('archive.zip', 'r') as zipf:
+    # Список файлов
+    print(zipf.namelist())
+    
+    # Прочитать файл
+    content = zipf.read('file1.txt')
+    
+    # Извлечь все файлы
+    zipf.extractall('extracted')
+    
+    # Извлечь один файл
+    zipf.extract('file1.txt', 'output_dir')
+
+# Информация о файлах в архиве
+with zipfile.ZipFile('archive.zip', 'r') as zipf:
+    for info in zipf.infolist():
+        print(f"{info.filename}: {info.file_size} bytes")
+</code></pre>
+                    </div>
+                </section>
+
+                <!-- Continue with sections 21-60 in the same format -->
+                <section id="tarfile" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">21. tarfile — TAR-архивы</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import tarfile
+
+# Создать TAR-архив
+with tarfile.open('archive.tar.gz', 'w:gz') as tar:
+    tar.add('file1.txt')
+    tar.add('directory')
+
+# Извлечь архив
+with tarfile.open('archive.tar.gz', 'r:gz') as tar:
+    tar.extractall('extracted')
+    print(tar.getnames())
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="gzip-bz2" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">22. gzip и bz2 — Сжатие данных</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import gzip
+import bz2
+
+# GZIP - работа с файлами
+with gzip.open('file.txt.gz', 'wt') as f:
+    f.write('Сжатые данные')
+
+with gzip.open('file.txt.gz', 'rt') as f:
+    content = f.read()
+
+# Сжатие и распаковка данных
+data = b'Some data to compress'
+compressed = gzip.compress(data)
+decompressed = gzip.decompress(compressed)
+
+# BZ2 - аналогично
+with bz2.open('file.txt.bz2', 'wt') as f:
+    f.write('Данные')
+
+compressed_bz2 = bz2.compress(data)
+decompressed_bz2 = bz2.decompress(compressed_bz2)
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="csv" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">23. csv — Работа с CSV-файлами</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import csv
+
+# Запись CSV
+with open('data.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['Name', 'Age', 'City'])
+    writer.writerow(['Alice', 30, 'Moscow'])
+    writer.writerow(['Bob', 25, 'SPB'])
+
+# Чтение CSV
+with open('data.csv', 'r') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        print(row)
+
+# Работа со словарями
+with open('data.csv', 'w', newline='') as f:
+    fieldnames = ['name', 'age', 'city']
+    writer = csv.DictWriter(f, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerow({'name': 'Alice', 'age': 30, 'city': 'Moscow'})
+
+with open('data.csv', 'r') as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(f"{row['name']}: {row['age']} лет")
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="sqlite3" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">24. sqlite3 — База данных SQLite</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import sqlite3
+
+# Подключиться к БД (создаст если не существует)
+conn = sqlite3.connect('database.db')
+cursor = conn.cursor()
+
+# Создать таблицу
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        age INTEGER
+    )
+''')
+
+# Вставить данные
+cursor.execute("INSERT INTO users (name, age) VALUES (?, ?)", ('Alice', 30))
+
+# Вставить несколько записей
+users = [('Bob', 25), ('Charlie', 35)]
+cursor.executemany("INSERT INTO users (name, age) VALUES (?, ?)", users)
+
+# Сохранить изменения
+conn.commit()
+
+# Выбрать данные
+cursor.execute("SELECT * FROM users WHERE age > ?", (20,))
+for row in cursor.fetchall():
+    print(row)
+
+# Закрыть соединение
+conn.close()
+
+# Context manager (автоматически commit и close)
+with sqlite3.connect('database.db') as conn:
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users")
+    print(cursor.fetchall())
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="hashlib" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">25. hashlib — Криптографические хеш-функции</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import hashlib
+
+# SHA-256 (рекомендуется)
+data = "Hello, World!".encode('utf-8')
+hash_obj = hashlib.sha256(data)
+print(hash_obj.hexdigest())
+
+# MD5 (небезопасен, только для контрольных сумм)
+md5_hash = hashlib.md5(data).hexdigest()
+
+# SHA-512
+sha512_hash = hashlib.sha512(data).hexdigest()
+
+# Хеширование файла
+def hash_file(filename):
+    sha256 = hashlib.sha256()
+    with open(filename, 'rb') as f:
+        while chunk := f.read(8192):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+# Хеширование пароля (НЕ используйте это в production!)
+# Используйте bcrypt или argon2 для паролей
+password = "my_password".encode('utf-8')
+hashed = hashlib.sha256(password).hexdigest()
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="secrets" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">26. secrets — Криптографически стойкие случайные числа</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import secrets
+
+# Генерировать токены
+token_bytes = secrets.token_bytes(16)
+token_hex = secrets.token_hex(16)
+token_url = secrets.token_urlsafe(16)
+
+# Безопасный выбор
+colors = ['red', 'green', 'blue']
+color = secrets.choice(colors)
+
+# Генерация паролей
+import string
+alphabet = string.ascii_letters + string.digits
+password = ''.join(secrets.choice(alphabet) for i in range(12))
+
+# Безопасное сравнение (защита от timing attacks)
+if secrets.compare_digest(token1, token2):
+    print("Токены совпадают")
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="asyncio" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">27. asyncio — Асинхронное программирование</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import asyncio
+
+# Асинхронная функция
+async def fetch_data(url):
+    print(f"Fetching {url}")
+    await asyncio.sleep(2)  # Имитация I/O операции
+    return f"Data from {url}"
+
+# Запуск одной корутины
+async def main():
+    result = await fetch_data("https://example.com")
+    print(result)
+
+asyncio.run(main())
+
+# Параллельное выполнение задач
+async def main():
+    tasks = [
+        fetch_data("https://site1.com"),
+        fetch_data("https://site2.com"),
+        fetch_data("https://site3.com")
+    ]
+    results = await asyncio.gather(*tasks)
+    print(results)
+
+asyncio.run(main())
+
+# Создание задач
+async def main():
+    task1 = asyncio.create_task(fetch_data("url1"))
+    task2 = asyncio.create_task(fetch_data("url2"))
+    
+    result1 = await task1
+    result2 = await task2
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="threading" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">28. threading — Многопоточность</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import threading
+import time
+
+# Создать и запустить поток
+def worker(name):
+    print(f"Thread {name} starting")
+    time.sleep(2)
+    print(f"Thread {name} finished")
+
+thread = threading.Thread(target=worker, args=("Worker-1",))
+thread.start()
+thread.join()  # Ждать завершения
+
+# Несколько потоков
+threads = []
+for i in range(5):
+    t = threading.Thread(target=worker, args=(f"Worker-{i}",))
+    threads.append(t)
+    t.start()
+
+for t in threads:
+    t.join()
+
+# Синхронизация с Lock
+counter = 0
+lock = threading.Lock()
+
+def increment():
+    global counter
+    for _ in range(100000):
+        with lock:
+            counter += 1
+
+threads = [threading.Thread(target=increment) for _ in range(2)]
+for t in threads:
+    t.start()
+for t in threads:
+    t.join()
+
+print(f"Counter: {counter}")
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="multiprocessing" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">29. multiprocessing — Многопроцессность</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from multiprocessing import Process, Queue, Pool
+import os
+
+# Создать процесс
+def worker(name):
+    print(f"Process {name} (PID: {os.getpid()})")
+
+if __name__ == '__main__':
+    p = Process(target=worker, args=("Worker-1",))
+    p.start()
+    p.join()
+
+# Обмен данными через Queue
+def producer(q):
+    q.put(['data'])
+
+def consumer(q):
+    data = q.get()
+    print(data)
+
+if __name__ == '__main__':
+    q = Queue()
+    p1 = Process(target=producer, args=(q,))
+    p2 = Process(target=consumer, args=(q,))
+    p1.start()
+    p2.start()
+    p1.join()
+    p2.join()
+
+# Pool для параллельных вычислений
+def square(x):
+    return x * x
+
+if __name__ == '__main__':
+    with Pool(4) as pool:
+        results = pool.map(square, [1, 2, 3, 4, 5])
+        print(results)  # [1, 4, 9, 16, 25]
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="unittest" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">30. unittest — Модульное тестирование</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import unittest
+
+def add(a, b):
+    return a + b
+
+class TestMath(unittest.TestCase):
+    def setUp(self):
+        # Выполняется перед каждым тестом
+        self.numbers = [1, 2, 3]
+    
+    def tearDown(self):
+        # Выполняется после каждого теста
+        pass
+    
+    def test_add(self):
+        self.assertEqual(add(2, 3), 5)
+        self.assertEqual(add(-1, 1), 0)
+    
+    def test_types(self):
+        self.assertIsInstance(add(1, 2), int)
+        self.assertTrue(add(1, 1) > 0)
+        self.assertIn(2, self.numbers)
+    
+    def test_exceptions(self):
+        with self.assertRaises(TypeError):
+            add("1", 2)
+
+if __name__ == '__main__':
+    unittest.main()
+</code></pre>
+                    </div>
+                </section>
+
+                <!-- Sections 31-60 -->
+                
+                <section id="typing" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">31. typing — Type hints для статического анализа</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from typing import List, Dict, Tuple, Set, Optional, Union, Callable, TypeVar
+
+# Базовые типы
+def greet(name: str) -> str:
+    return f"Hello, {name}"
+
+# Коллекции
+def process_items(items: List[int]) -> Dict[str, int]:
+    return {"count": len(items), "sum": sum(items)}
+
+# Optional - может быть None
+def find_user(user_id: int) -> Optional[str]:
+    return "User" if user_id > 0 else None
+
+# Union - несколько типов
+def process_value(value: Union[int, str]) -> str:
+    return str(value)
+
+# Callable - функция
+def apply_func(func: Callable[[int, int], int], a: int, b: int) -> int:
+    return func(a, b)
+
+# TypeVar - генерики
+T = TypeVar('T')
+def first_element(items: List[T]) -> T:
+    return items[0]
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="enum" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">32. enum — Перечисления</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from enum import Enum, auto
+
+class Color(Enum):
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+
+# Использование
+color = Color.RED
+print(color.name)   # 'RED'
+print(color.value)  # 1
+
+# Автоматическое значение
+class Status(Enum):
+    PENDING = auto()   # 1
+    RUNNING = auto()   # 2
+    DONE = auto()      # 3
+
+# Итерация
+for status in Status:
+    print(status)
+
+# Сравнение
+if color == Color.RED:
+    print("Красный цвет!")
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="dataclasses" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">33. dataclasses — Классы данных</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from dataclasses import dataclass, field
+
+@dataclass
+class Person:
+    name: str
+    age: int
+    email: str = "no-email"
+    friends: list = field(default_factory=list)
+
+# Автоматически генерируется __init__, __repr__, __eq__
+person = Person("Alice", 30)
+print(person)  # Person(name='Alice', age=30, email='no-email', friends=[])
+
+# Сравнение
+person2 = Person("Alice", 30)
+print(person == person2)  # True
+
+# Frozen (immutable)
+@dataclass(frozen=True)
+class Point:
+    x: float
+    y: float
+
+p = Point(1.0, 2.0)
+# p.x = 3.0  # Ошибка - объект неизменяемый!
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="traceback" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">34. traceback — Трассировка стека</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import traceback
+
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    # Вывести traceback
+    traceback.print_exc()
+    
+    # Получить traceback как строку
+    tb_str = traceback.format_exc()
+    print(tb_str)
+    
+    # Логировать traceback
+    with open('error.log', 'a') as f:
+        f.write(traceback.format_exc())
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="inspect" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">35. inspect — Инспекция объектов</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import inspect
+
+def my_function(a, b, c=10):
+    """Пример функции"""
+    return a + b + c
+
+# Подпись функции
+sig = inspect.signature(my_function)
+print(sig)  # (a, b, c=10)
+
+# Параметры
+for name, param in sig.parameters.items():
+    print(f"{name}: {param.default}")
+
+# Docstring
+print(inspect.getdoc(my_function))
+
+# Исходный код
+print(inspect.getsource(my_function))
+
+# Проверки
+print(inspect.isfunction(my_function))
+print(inspect.ismethod(my_function))
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="warnings" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">36. warnings — Управление предупреждениями</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import warnings
+
+# Выдать предупреждение
+warnings.warn("Эта функция устарела", DeprecationWarning)
+
+# Игнорировать предупреждения
+warnings.filterwarnings('ignore')
+
+# Показывать только определённые предупреждения
+warnings.filterwarnings('default', category=DeprecationWarning)
+
+# Context manager для временного изменения
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    # Код который может генерировать предупреждения
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="time" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">37. time — Доступ ко времени</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import time
+
+# Текущее время (UNIX timestamp)
+timestamp = time.time()
+print(timestamp)
+
+# Задержка
+time.sleep(2)  # 2 секунды
+
+# Форматирование времени
+local_time = time.localtime()
+formatted = time.strftime("%Y-%m-%d %H:%M:%S", local_time)
+print(formatted)
+
+# Измерение производительности
+start = time.perf_counter()
+# Код для измерения
+time.sleep(1)
+end = time.perf_counter()
+print(f"Время выполнения: {end - start:.4f} сек")
+
+# Процессорное время
+cpu_time = time.process_time()
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="socket" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">38. socket — Low-level сетевой интерфейс</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import socket
+
+# TCP клиент
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect(('example.com', 80))
+client.send(b'GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+response = client.recv(4096)
+client.close()
+
+# TCP сервер
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(('localhost', 8000))
+server.listen(5)
+print("Сервер слушает порт 8000...")
+
+while True:
+    client_socket, address = server.accept()
+    print(f"Подключение от {address}")
+    client_socket.send(b"Hello from server!")
+    client_socket.close()
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="http-server" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">39. http.server — Простой HTTP-сервер</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from http.server import HTTPServer, SimpleHTTPRequestHandler
+
+# Простой файловый сервер (из командной строки):
+# python -m http.server 8000
+
+# Кастомный обработчик
+class MyHandler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(b'<h1>Hello, World!</h1>')
+
+server = HTTPServer(('localhost', 8000), MyHandler)
+print("Server running on http://localhost:8000")
+server.serve_forever()
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="ssl" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">40. ssl — TLS/SSL обёртка</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import ssl
+import socket
+
+# Создать SSL контекст с дефолтными настройками
+context = ssl.create_default_context()
+
+# HTTPS запрос
+with socket.create_connection(('www.python.org', 443)) as sock:
+    with context.wrap_socket(sock, server_hostname='www.python.org') as ssock:
+        ssock.sendall(b'GET / HTTP/1.1\r\nHost: www.python.org\r\n\r\n')
+        data = ssock.recv(4096)
+        print(data.decode())
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="queue" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">41. queue — Синхронизированная очередь</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import queue
+import threading
+
+# Потокобезопасная очередь
+q = queue.Queue()
+
+def producer():
+    for i in range(5):
+        q.put(i)
+        print(f"Produced {i}")
+
+def consumer():
+    while True:
+        item = q.get()
+        if item is None:
+            break
+        print(f"Consumed {item}")
+        q.task_done()
+
+# Запуск потоков
+t1 = threading.Thread(target=producer)
+t2 = threading.Thread(target=consumer)
+t1.start()
+t2.start()
+t1.join()
+q.put(None)
+t2.join()
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="decimal" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">42. decimal — Десятичная арифметика</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from decimal import Decimal, getcontext
+
+# Точная арифметика (без ошибок округления)
+print(0.1 + 0.2)  # 0.30000000000000004 (float)
+print(Decimal('0.1') + Decimal('0.2'))  # 0.3 (Decimal)
+
+# Финансовые расчёты
+price = Decimal('19.99')
+quantity = Decimal('3')
+total = price * quantity
+print(total)  # 59.97
+
+# Настройка точности
+getcontext().prec = 6
+print(Decimal('1') / Decimal('7'))  # 0.142857
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="fractions" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">43. fractions — Рациональные числа</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from fractions import Fraction
+
+# Создать дробь
+f1 = Fraction(1, 3)  # 1/3
+f2 = Fraction(1, 6)  # 1/6
+
+# Арифметика
+print(f1 + f2)  # 1/2
+print(f1 * f2)  # 1/18
+
+# Из строки
+f3 = Fraction('0.5')  # 1/2
+
+# Из float
+f4 = Fraction(0.25)  # 1/4
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="statistics" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">44. statistics — Базовая статистика</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import statistics
+
+data = [1, 2, 3, 4, 5, 5, 6, 7, 8, 9]
+
+# Среднее значение
+print(statistics.mean(data))  # 5.0
+
+# Медиана
+print(statistics.median(data))  # 5.0
+
+# Мода (самое частое значение)
+print(statistics.mode(data))  # 5
+
+# Стандартное отклонение
+print(statistics.stdev(data))  # 2.58
+
+# Дисперсия
+print(statistics.variance(data))  # 6.67
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="configparser" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">45. configparser — Конфигурационные файлы</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import configparser
+
+# Создать конфиг
+config = configparser.ConfigParser()
+config['DEFAULT'] = {'debug': 'False'}
+config['database'] = {
+    'host': 'localhost',
+    'port': '5432',
+    'user': 'admin'
+}
+
+# Записать в файл
+with open('config.ini', 'w') as f:
+    config.write(f)
+
+# Прочитать из файла
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+# Получить значения
+host = config['database']['host']
+port = config['database'].getint('port')
+debug = config['DEFAULT'].getboolean('debug')
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="argparse" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">46. argparse — Парсинг аргументов CLI</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import argparse
+
+# Создать парсер
+parser = argparse.ArgumentParser(description='Пример CLI приложения')
+
+# Позиционные аргументы
+parser.add_argument('filename', help='Имя файла для обработки')
+
+# Опциональные аргументы
+parser.add_argument('-v', '--verbose', action='store_true', help='Подробный вывод')
+parser.add_argument('-o', '--output', help='Выходной файл')
+parser.add_argument('-n', '--number', type=int, default=10, help='Число')
+
+# Парсинг
+args = parser.parse_args()
+
+print(f"Файл: {args.filename}")
+if args.verbose:
+    print("Режим verbose включён")
+print(f"Число: {args.number}")
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="getpass" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">47. getpass — Безопасный ввод пароля</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import getpass
+
+# Безопасный ввод пароля (без отображения на экране)
+username = input("Username: ")
+password = getpass.getpass("Password: ")
+
+print(f"Вы вошли как {username}")
+
+# Получить текущего пользователя системы
+current_user = getpass.getuser()
+print(f"Текущий пользователь: {current_user}")
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="platform" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">48. platform — Информация о платформе</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import platform
+
+# Информация о системе
+print(platform.system())     # 'Linux', 'Windows', 'Darwin'
+print(platform.release())    # Версия ОС
+print(platform.version())    # Полная версия
+print(platform.machine())    # 'x86_64', 'arm64'
+print(platform.processor())  # Процессор
+print(platform.python_version())  # Версия Python
+print(platform.platform())   # Полная информация
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="smtplib" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">49. smtplib — Отправка email по SMTP</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+# Создать сообщение
+msg = MIMEMultipart()
+msg['From'] = 'sender@example.com'
+msg['To'] = 'recipient@example.com'
+msg['Subject'] = 'Тестовое письмо'
+
+body = 'Это тестовое письмо из Python!'
+msg.attach(MIMEText(body, 'plain'))
+
+# Отправить
+with smtplib.SMTP('smtp.gmail.com', 587) as server:
+    server.starttls()
+    server.login('your_email@gmail.com', 'your_password')
+    server.send_message(msg)
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="email" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">50. email — Работа с email-сообщениями</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+
+# Многочастное письмо
+msg = MIMEMultipart()
+msg['Subject'] = 'Письмо с вложением'
+
+# Текст
+msg.attach(MIMEText('Текст письма', 'plain'))
+
+# Вложение
+with open('document.pdf', 'rb') as f:
+    part = MIMEBase('application', 'octet-stream')
+    part.set_payload(f.read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', 'attachment; filename=document.pdf')
+    msg.attach(part)
+</code></pre>
+                    </div>
+                </section>
+
+                <!-- Sections 51-60 -->
+                <section id="calendar" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">51. calendar — Календарь</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import calendar
+
+# Календарь на месяц
+print(calendar.month(2025, 1))
+
+# Календарь на год
+print(calendar.calendar(2025))
+
+# День недели (0=Пн, 6=Вс)
+day = calendar.weekday(2025, 1, 1)
+print(day)  # 2 (среда)
+
+# Информация о месяце
+first_weekday, num_days = calendar.monthrange(2025, 1)
+print(f"Дней в январе 2025: {num_days}")
+
+# Високосный год
+print(calendar.isleap(2024))  # True
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="cmath" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">52. cmath — Комплексные числа</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import cmath
+
+# Комплексное число
+z = 3 + 4j
+
+# Функции
+print(cmath.sqrt(z))
+print(cmath.exp(z))
+print(cmath.sin(z))
+
+# Полярные координаты
+r, phi = cmath.polar(z)
+print(f"Модуль: {r}, Аргумент: {phi}")
+
+# Из полярных координат
+z2 = cmath.rect(r, phi)
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="pprint" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">53. pprint — Pretty-print данных</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from pprint import pprint, pformat
+
+data = {
+    'users': [
+        {'name': 'Alice', 'age': 30, 'skills': ['Python', 'JavaScript', 'SQL']},
+        {'name': 'Bob', 'age': 25, 'skills': ['Java', 'C++']},
+    ],
+    'settings': {'debug': True, 'timeout': 30}
+}
+
+# Красиво вывести
+pprint(data, indent=4, width=80)
+
+# Получить как строку
+formatted = pformat(data)
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="cmd" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">54. cmd — Построение оболочек команд</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import cmd
+
+class MyShell(cmd.Cmd):
+    intro = 'Добро пожаловать! Введите help для справки.'
+    prompt = '> '
+    
+    def do_greet(self, name):
+        """Поприветствовать пользователя: greet <name>"""
+        print(f"Привет, {name}!")
+    
+    def do_exit(self, arg):
+        """Выйти из программы"""
+        return True
+
+if __name__ == '__main__':
+    MyShell().cmdloop()
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="contextlib" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">55. contextlib — Контекстные менеджеры</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from contextlib import contextmanager, closing
+
+@contextmanager
+def my_context():
+    print("Входим в контекст")
+    yield "ресурс"
+    print("Выходим из контекста")
+
+with my_context() as resource:
+    print(f"Используем {resource}")
+
+# Автоматически закрывает объект
+from urllib.request import urlopen
+with closing(urlopen('http://example.com')) as page:
+    content = page.read()
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="weakref" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">56. weakref — Слабые ссылки</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import weakref
+
+class MyClass:
+    pass
+
+obj = MyClass()
+
+# Слабая ссылка (не препятствует удалению объекта)
+weak_ref = weakref.ref(obj)
+print(weak_ref())  # <__main__.MyClass object>
+
+# Удалить объект
+del obj
+print(weak_ref())  # None (объект удалён)
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="array" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">57. array — Эффективные массивы</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">from array import array
+
+# Массив целых чисел (более эффективен чем список)
+arr = array('i', [1, 2, 3, 4, 5])
+arr.append(6)
+arr.extend([7, 8])
+print(arr)  # array('i', [1, 2, 3, 4, 5, 6, 7, 8])
+
+# Типы: 'i' - int, 'f' - float, 'd' - double, 'b' - signed char
+arr_float = array('f', [1.1, 2.2, 3.3])
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="base64" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">58. base64 — Кодирование Base64</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import base64
+
+# Кодировать
+data = b"Hello, World!"
+encoded = base64.b64encode(data)
+print(encoded)  # b'SGVsbG8sIFdvcmxkIQ=='
+
+# Декодировать
+decoded = base64.b64decode(encoded)
+print(decoded)  # b'Hello, World!'
+
+# URL-safe вариант
+url_encoded = base64.urlsafe_b64encode(data)
+url_decoded = base64.urlsafe_b64decode(url_encoded)
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="binascii" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">59. binascii — Бинарные данные и ASCII</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import binascii
+
+data = b"Hello"
+
+# В hex
+hex_str = binascii.hexlify(data)
+print(hex_str)  # b'48656c6c6f'
+
+# Из hex
+original = binascii.unhexlify(hex_str)
+print(original)  # b'Hello'
+
+# CRC32 контрольная сумма
+crc = binascii.crc32(data)
+print(hex(crc))
+</code></pre>
+                    </div>
+                </section>
+
+                <section id="codecs" class="section-card rounded-lg p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-blue-400">60. codecs — Кодеки и кодирование</h2>
+                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                        <div class="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                            <span class="text-sm text-gray-400">Python</span>
+                            <button onclick="copyCode(this)" class="copy-btn text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Копировать</button>
+                        </div>
+                        <pre><code class="language-python">import codecs
+
+# Открыть файл с указанным кодированием
+with codecs.open('file.txt', 'w', encoding='utf-8') as f:
+    f.write('Привет, мир!')
+
+with codecs.open('file.txt', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# Кодировать/декодировать
+text = "Привет"
+encoded = codecs.encode(text, 'utf-8')
+decoded = codecs.decode(encoded, 'utf-8')
+
+# ROT13 кодирование (caesar cipher)
+rot13 = codecs.encode('hello', 'rot13')
+print(rot13)  # 'uryyb'
+</code></pre>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-700 mt-12 py-6">
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p>© 2025 Python Stdlib Cheatsheet | Создано для разработчиков 🐍</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize highlight.js
+        hljs.highlightAll();
+
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.closest('.bg-gray-900').querySelector('code');
+            const code = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✓ Скопировано!';
+                button.classList.add('bg-green-600');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('bg-green-600');
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка копирования:', err);
+                button.textContent = '✗ Ошибка';
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight active section in TOC
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -80% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Remove active class from all links
+                    document.querySelectorAll('.toc-link').forEach(link => {
+                        link.classList.remove('text-blue-400', 'font-semibold');
+                        link.classList.add('text-gray-300');
+                    });
+                    
+                    // Add active class to current link
+                    const id = entry.target.getAttribute('id');
+                    const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+                    if (activeLink) {
+                        activeLink.classList.remove('text-gray-300');
+                        activeLink.classList.add('text-blue-400', 'font-semibold');
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('section[id]').forEach((section) => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
