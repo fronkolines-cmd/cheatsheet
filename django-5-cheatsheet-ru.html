@@ -403,6 +403,63 @@ Book.objects.bulk_create([
           </div>
         </section>
 
+
+          <!-- QuerySet Advanced Methods -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Дополнительные методы QuerySet</h3>
+            <p class="text-slate-300 mb-3">Расширенные методы для работы с данными: get_or_create, update_or_create, bulk_update, first, last, earliest, latest, only, defer, iterator, in_bulk, union, intersection, difference.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python"># Атомарные операции создания/обновления
+book, created = Book.objects.get_or_create(
+    title='Django Guide',
+    defaults={'price': 29.99, 'stock': 10, 'author': author}
+)
+
+book, created = Book.objects.update_or_create(
+    title='Django Guide',
+    defaults={'price': 34.99, 'stock': 15}
+)
+
+# Первый/последний/ранний/поздний
+first_book = Book.objects.first()
+last_book = Book.objects.last()
+oldest = Book.objects.earliest('published_at')
+newest = Book.objects.latest('published_at')
+
+# Оптимизация полей (уменьшает память)
+books = Book.objects.only('title', 'price')
+books = Book.objects.defer('description')
+
+# Эффективная итерация больших наборов
+for book in Book.objects.iterator(chunk_size=1000):
+    process(book)
+
+# Получить словарь {id: объект}
+books_dict = Book.objects.in_bulk([1, 2, 3])
+
+# Массовое обновление
+books = list(Book.objects.filter(price__lt=20))
+for book in books:
+    book.price += 5
+Book.objects.bulk_update(books, ['price'])
+
+# Операции с множествами QuerySet
+cheap = Book.objects.filter(price__lt=15)
+expensive = Book.objects.filter(price__gt=100)
+
+all_interesting = cheap.union(expensive)         # OR
+both = cheap.intersection(expensive)             # AND
+only_cheap = cheap.difference(expensive)         # Разность
+
+# Пустой QuerySet и сырой SQL
+empty = Book.objects.none()
+books = Book.objects.raw('SELECT * FROM app_book WHERE price > %s', [10])
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: get_or_create/update_or_create для идемпотентных операций, only/defer для экономии памяти, iterator для миллионов записей, bulk_update для массовых изменений, union/intersection/difference для сложных выборок.</div>
+          </div>
+
         <!-- Forms -->
         <section id="forms" class="section-card p-6">
           <h2 class="text-2xl font-bold mb-2 text-sky-400">2. Функции для работы с формами</h2>
@@ -538,6 +595,64 @@ class BookWidgetForm(forms.ModelForm):
           </div>
         </section>
 
+
+          <!-- Form Custom Validation -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-amber-400 mb-2">Кастомная валидация форм</h3>
+            <p class="text-slate-300 mb-3">Методы clean_FIELD() для валидации отдельных полей и clean() для кросс-полевой валидации.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django import forms
+from django.core.exceptions import ValidationError
+
+class RegistrationForm(forms.Form):
+    username = forms.CharField(max_length=30)
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
+    password_confirm = forms.CharField(widget=forms.PasswordInput)
+    age = forms.IntegerField()
+    
+    # Валидация конкретного поля
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise ValidationError('Это имя уже занято')
+        if len(username) < 3:
+            raise ValidationError('Имя должно быть минимум 3 символа')
+        return username.lower()
+    
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if not email.endswith('@example.com'):
+            raise ValidationError('Только @example.com адреса разрешены')
+        return email
+    
+    def clean_age(self):
+        age = self.cleaned_data['age']
+        if age < 18:
+            raise ValidationError('Должно быть 18+')
+        return age
+    
+    # Валидация формы целиком (кросс-полевая)
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+        
+        if password and password_confirm:
+            if password != password_confirm:
+                raise ValidationError({
+                    'password_confirm': 'Пароли не совпадают'
+                })
+            if len(password) < 8:
+                raise ValidationError('Пароль должен быть минимум 8 символов')
+        
+        return cleaned_data
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: clean_FIELD() для валидации отдельных полей, clean() для проверки зависимости между полями.</div>
+          </div>
+
         <!-- Auth -->
         <section id="auth" class="section-card p-6">
           <h2 class="text-2xl font-bold mb-2 text-sky-400">3. Функции аутентификации и авторизации</h2>
@@ -598,6 +713,90 @@ if user.has_perm('app.change_book'):
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: классический login/logout, доступ по правам/ролям, ограничение доступа к представлениям.</div>
         </section>
 
+
+          <!-- Auth Mixins for CBV -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Миксины аутентификации для CBV</h3>
+            <p class="text-slate-300 mb-3">Для Class-Based Views используйте миксины: LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.views.generic import ListView, UpdateView
+from django.contrib.auth import update_session_auth_hash
+from .models import Book
+
+class BookListView(LoginRequiredMixin, ListView):
+    model = Book
+    login_url = '/login/'  # куда перенаправить если не залогинен
+
+class BookUpdateView(PermissionRequiredMixin, UpdateView):
+    model = Book
+    fields = ['title', 'price']
+    permission_required = 'app.change_book'
+    raise_exception = True  # 403 вместо редиректа
+
+class AdminBookView(UserPassesTestMixin, ListView):
+    model = Book
+    def test_func(self):
+        return self.request.user.is_superuser
+
+# Обновление пароля без разлогинивания
+def change_password(request):
+    if request.method == 'POST':
+        user = request.user
+        user.set_password(request.POST['new_password'])
+        user.save()
+        # Сохранить сессию после смены пароля
+        update_session_auth_hash(request, user)
+        return redirect('profile')
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: миксины для CBV вместо декораторов, update_session_auth_hash после смены пароля чтобы не разлогинивать пользователя.</div>
+          </div>
+
+
+          <!-- Sessions Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Расширенная работа с сессиями</h3>
+            <p class="text-slate-300 mb-3">Дополнительные методы: set_test_cookie, test_cookie_worked, delete_test_cookie, session_key, modified.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python"># Тестирование поддержки cookies
+def step1(request):
+    request.session.set_test_cookie()
+    return render(request, 'step1.html')
+
+def step2(request):
+    if request.session.test_cookie_worked():
+        request.session.delete_test_cookie()
+        # Cookies работают
+    else:
+        # Cookies отключены
+        return HttpResponse('Включите cookies')
+    return render(request, 'step2.html')
+
+# Информация о сессии
+def session_info(request):
+    return JsonResponse({
+        'session_key': request.session.session_key,
+        'modified': request.session.modified,  # Изменена ли сессия
+        'age': request.session.get_expiry_age(),
+        'expires_at': request.session.get_expiry_date(),
+    })
+
+# Ручное сохранение (когда modified=False)
+def update_nested(request):
+    request.session['cart']['item1']['quantity'] = 5
+    request.session.modified = True  # Обязательно при изменении вложенных структур
+    request.session.save()
+
+# Очистка устаревших сессий (management command)
+# python manage.py clearsessions
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: test_cookie для проверки поддержки cookies, modified=True при изменении вложенных структур, session_key для отладки.</div>
+          </div>
+
         <!-- HTTP -->
         <section id="http" class="section-card p-6">
           <h2 class="text-2xl font-bold mb-2 text-sky-400">4. Функции для работы с HTTP</h2>
@@ -648,6 +847,119 @@ def go_home(request):
             </div>
           </div>
         </section>
+
+
+          <!-- HTTP Response Variants and Shortcuts -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">HTTP ответы и shortcuts</h3>
+            <p class="text-slate-300 mb-3">Специальные HTTP ответы для разных статусов и shortcuts для упрощения кода.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django.http import (
+    HttpResponseRedirect, HttpResponsePermanentRedirect,
+    HttpResponseNotFound, HttpResponseBadRequest,
+    HttpResponseForbidden, HttpResponseServerError
+)
+from django.shortcuts import get_object_or_404, get_list_or_404
+
+# Специальные статусы
+def custom_404(request):
+    return HttpResponseNotFound('Страница не найдена')
+
+def custom_400(request):
+    return HttpResponseBadRequest('Некорректный запрос')
+
+def custom_403(request):
+    return HttpResponseForbidden('Доступ запрещён')
+
+def custom_500(request):
+    return HttpResponseServerError('Ошибка сервера')
+
+# Shortcuts - автоматический 404
+def book_detail(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    return render(request, 'book.html', {'book': book})
+
+def books_by_author(request, author_id):
+    books = get_list_or_404(Book, author_id=author_id)
+    return render(request, 'books.html', {'books': books})
+
+# Атрибуты request
+def request_info(request):
+    return JsonResponse({
+        'method': request.method,
+        'path': request.path,
+        'full_path': request.get_full_path(),
+        'host': request.get_host(),
+        'is_secure': request.is_secure(),
+        'user_agent': request.META.get('HTTP_USER_AGENT', ''),
+        'content_type': request.content_type,
+    })
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: get_object_or_404/get_list_or_404 вместо try/except для чистого кода, специальные HttpResponse* для явных статусов.</div>
+          </div>
+
+
+          <!-- Signals Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Дополнительные сигналы</h3>
+            <p class="text-slate-300 mb-3">request_started, request_finished, pre_migrate, post_migrate, создание собственных сигналов.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python"># Сигналы запроса
+from django.core.signals import request_started, request_finished
+from django.dispatch import receiver
+
+@receiver(request_started)
+def on_request_start(sender, environ, **kwargs):
+    print('Запрос начат')
+
+@receiver(request_finished)
+def on_request_finish(sender, **kwargs):
+    print('Запрос завершён')
+
+# Сигналы миграций
+from django.db.models.signals import pre_migrate, post_migrate
+
+@receiver(post_migrate)
+def create_default_data(sender, **kwargs):
+    if sender.name == 'app':
+        # Создать начальные данные после миграций
+        Category.objects.get_or_create(name='Default')
+
+# Создание собственного сигнала
+from django.dispatch import Signal
+
+order_placed = Signal()  # providing_args deprecated в Django 3.1+
+
+# Отправка сигнала
+def place_order(request, order):
+    # ... логика создания заказа
+    order_placed.send(sender=order.__class__, order=order, user=request.user)
+
+# Подписка на собственный сигнал
+@receiver(order_placed)
+def send_order_email(sender, order, user, **kwargs):
+    send_email(user.email, f'Заказ #{order.id} оформлен')
+
+# Отключение сигналов временно (для тестов/миграций)
+from django.db.models.signals import post_save
+
+@receiver(post_save, sender=Book)
+def book_saved(sender, instance, **kwargs):
+    print('Book saved')
+
+# В коде:
+from django.db.models.signals import post_save
+
+post_save.disconnect(book_saved, sender=Book)
+# ... операции без сигнала
+post_save.connect(book_saved, sender=Book)
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: request_started/finished для глобального логирования, post_migrate для начальных данных, собственные сигналы для слабосвязанной архитектуры.</div>
+          </div>
 
         <!-- Templates -->
         <section id="templates" class="section-card p-6">
@@ -707,6 +1019,131 @@ html = render_to_string('email.html', {'username': 'alice'})
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: серверная отрисовка HTML, email-шаблоны, повторно используемые блоки, статика через {% static %}.</div>
         </section>
 
+
+          <!-- Template Tags and Filters -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Дополнительные теги и фильтры шаблонов</h3>
+            <p class="text-slate-300 mb-3">Расширенные теги: with, now, comment, verbatim, autoescape, regroup, firstof. Фильтры: length, join, slice, timesince, timeuntil, pluralize, и другие.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-xml">&lt;!-- Временная переменная --&gt;
+{% with total=items|length %}
+  У вас {{ total }} товаров
+{% endwith %}
+
+&lt;!-- Ссылка на именованный URL --&gt;
+<a href="{% url 'book-detail' pk=book.id %}">Детали</a>
+
+&lt;!-- Текущее время --&gt;
+{% now "Y-m-d H:i" %}
+
+&lt;!-- Комментарий --&gt;
+{% comment %}Не отображается{% endcomment %}
+
+&lt;!-- Verbatim - Django не обрабатывает --&gt;
+{% verbatim %}{{ js_template }}{% endverbatim %}
+
+&lt;!-- Автоэкранирование --&gt;
+{% autoescape off %}{{ html_content }}{% endautoescape %}
+
+&lt;!-- Группировка данных --&gt;
+{% regroup cities by country as country_list %}
+{% for country in country_list %}
+  <h3>{{ country.grouper }}</h3>
+  {% for city in country.list %}
+    <li>{{ city.name }}</li>
+  {% endfor %}
+{% endfor %}
+
+&lt;!-- Первое не-пустое --&gt;
+{% firstof var1 var2 "default" %}
+
+&lt;!-- Популярные фильтры --&gt;
+{{ text|upper }}  {{ text|lower }}  {{ text|title }}
+{{ text|truncatewords:10 }}  {{ text|truncatechars:50 }}
+{{ text|slugify }}  {{ html|striptags }}  {{ html|safe }}
+{{ text|linebreaks }}
+{{ number|add:5 }}  {{ price|floatformat:2 }}
+{{ items|length }}  {{ items|first }}  {{ items|last }}
+{{ items|join:", " }}  {{ items|slice:":5" }}
+{{ date|date:"Y-m-d" }}  {{ date|timesince }}  {{ date|timeuntil }}
+{{ value|default:"нет" }}  {{ bool|yesno:"да,нет" }}
+{{ url|urlencode }}  {{ text|urlize }}
+{{ count|pluralize }}  {{ count|pluralize:"ies" }}
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: with для читаемости и оптимизации, now для текущего времени, verbatim для JS шаблонов, regroup для группировки данных, фильтры для форматирования без лишней логики во вьюхах.</div>
+          </div>
+
+
+          <!-- Logging Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Настройка логирования</h3>
+            <p class="text-slate-300 mb-3">Пример конфигурации LOGGING в settings.py с разными уровнями и обработчиками.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python"># settings.py
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/django.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+        'app': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+# views.py
+import logging
+logger = logging.getLogger('app')
+
+def my_view(request):
+    logger.debug('Debug message')
+    logger.info('Info message')
+    logger.warning('Warning message')
+    logger.error('Error message')
+    logger.critical('Critical message')
+    
+    try:
+        risky_operation()
+    except Exception:
+        logger.exception('Произошла ошибка')  # Логирует с traceback
+    
+    return HttpResponse('OK')
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: DEBUG для разработки, INFO для важных событий, WARNING для потенциальных проблем, ERROR для ошибок, CRITICAL для критических сбоев. exception() для автоматического traceback.</div>
+          </div>
+
         <!-- URLs -->
         <section id="urls" class="section-card p-6">
           <h2 class="text-2xl font-bold mb-2 text-sky-400">6. Функции для работы с URL</h2>
@@ -754,6 +1191,127 @@ urlpatterns += [
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: именованные маршруты, reverse для ссылок в коде и шаблонах, include для составных конфигураций.</div>
         </section>
 
+
+          <!-- URL Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">reverse_lazy и конвертеры</h3>
+            <p class="text-slate-300 mb-3">reverse_lazy для CBV, namespace для модульности, встроенные конвертеры (int, str, slug, uuid, path).</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python"># urls.py
+from django.urls import path, include
+
+app_name = 'books'  # namespace
+
+urlpatterns = [
+    path('book/<int:pk>/', views.detail, name='detail'),
+    path('book/<slug:slug>/', views.by_slug, name='by-slug'),
+    path('author/<uuid:id>/', views.author, name='author'),
+    path('files/<path:filepath>/', views.file, name='file'),
+]
+
+# reverse vs reverse_lazy
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView
+
+# reverse_lazy для атрибутов класса
+class BookCreateView(CreateView):
+    model = Book
+    fields = ['title', 'price']
+    success_url = reverse_lazy('books:list')  # Ленивое вычисление
+
+# reverse в методах
+def my_view(request):
+    url = reverse('books:detail', kwargs={'pk': 1})
+    return redirect(url)
+
+# Кастомный конвертер
+class YearConverter:
+    regex = '[0-9]{4}'
+    def to_python(self, value): return int(value)
+    def to_url(self, value): return f'{value:04d}'
+
+from django.urls import register_converter
+register_converter(YearConverter, 'yyyy')
+# path('archive/<yyyy:year>/', ...)
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: reverse_lazy в атрибутах классов, namespace для крупных проектов, кастомные конвертеры для специфичных типов параметров.</div>
+          </div>
+
+
+          <!-- Files Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Расширенная работа с файлами</h3>
+            <p class="text-slate-300 mb-3">File, ContentFile, ImageField, валидация размера и типа файлов.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python"># models.py
+from django.db import models
+from django.core.validators import FileExtensionValidator
+
+def upload_to_path(instance, filename):
+    return f'uploads/{instance.user.id}/{filename}'
+
+class Document(models.Model):
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    file = models.FileField(
+        upload_to=upload_to_path,
+        validators=[FileExtensionValidator(['pdf', 'doc', 'docx'])]
+    )
+    image = models.ImageField(upload_to='images/', blank=True)
+
+# Валидация размера файла
+from django.core.exceptions import ValidationError
+
+def validate_file_size(value):
+    limit = 2 * 1024 * 1024  # 2MB
+    if value.size > limit:
+        raise ValidationError('Файл слишком большой (макс 2MB)')
+
+class Photo(models.Model):
+    image = models.ImageField(upload_to='photos/', validators=[validate_file_size])
+
+# views.py - работа с файлами
+from django.core.files import File
+from django.core.files.base import ContentFile
+
+def upload_view(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        uploaded_file = request.FILES['file']
+        
+        # Информация о файле
+        print(f"Name: {uploaded_file.name}")
+        print(f"Size: {uploaded_file.size}")
+        print(f"Content-Type: {uploaded_file.content_type}")
+        
+        # Сохранение в модель
+        doc = Document(user=request.user)
+        doc.file.save(uploaded_file.name, uploaded_file)
+        
+        # Или через default_storage
+        from django.core.files.storage import default_storage
+        path = default_storage.save(f'uploads/{uploaded_file.name}', uploaded_file)
+        url = default_storage.url(path)
+        
+        return JsonResponse({'url': url})
+    
+    return render(request, 'upload.html')
+
+# Создание файла из строки
+def generate_file(request):
+    content = "File content here"
+    file = ContentFile(content.encode('utf-8'))
+    
+    doc = Document(user=request.user)
+    doc.file.save('generated.txt', file)
+    
+    return HttpResponse('File created')
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: FileExtensionValidator для ограничения типов файлов, кастомные валидаторы для размера, upload_to функции для динамических путей, ContentFile для генерации файлов в памяти.</div>
+          </div>
+
         <!-- Sessions -->
         <section id="sessions" class="section-card p-6">
           <h2 class="text-2xl font-bold mb-2 text-sky-400">7. Функции для работы с сессиями</h2>
@@ -783,6 +1341,65 @@ def reset_session(request):
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: хранение настроек пользователя/корзины, flash-сообщения.</div>
         </section>
 
+
+          <!-- i18n Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Расширенная интернационализация</h3>
+            <p class="text-slate-300 mb-3">ngettext, pgettext, npgettext для множественного числа и контекстных переводов. Теги trans/blocktrans в шаблонах.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django.utils.translation import (
+    gettext as _,
+    gettext_lazy as _lazy,
+    ngettext,
+    pgettext,
+    npgettext,
+    activate,
+    deactivate,
+    get_language,
+)
+
+# Простой перевод
+text = _('Hello')
+
+# Lazy перевод (для атрибутов класса)
+class MyForm(forms.Form):
+    name = forms.CharField(label=_lazy('Name'))
+
+# Множественное число
+count = 5
+message = ngettext(
+    'You have %(count)d apple',
+    'You have %(count)d apples',
+    count
+) % {'count': count}
+
+# Контекстный перевод (если слово имеет разные значения)
+text1 = pgettext('verb', 'Close')   # Закрыть (действие)
+text2 = pgettext('adjective', 'Close')  # Близкий (прилагательное)
+
+# Контекстное + множественное число
+npgettext('food', 'apple', 'apples', count)
+
+# Переключение языка
+activate('ru')
+current = get_language()  # 'ru'
+deactivate()  # Вернуть к DEFAULT
+
+# В шаблонах
+# {% load i18n %}
+# {% trans "Hello" %}
+# {% blocktrans %}Text with {{ variable }}{% endblocktrans %}
+# {% language 'en' %}English content{% endlanguage %}
+
+# Генерация переводов (команды)
+# python manage.py makemessages -l ru
+# python manage.py compilemessages
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: ngettext для множественного числа, pgettext для контекстных переводов, trans/blocktrans в шаблонах, activate() для программного переключения языка.</div>
+          </div>
+
         <!-- Cookies -->
         <section id="cookies" class="section-card p-6">
           <h2 class="text-2xl font-bold mb-2 text-sky-400">8. Функции для работы с Cookies</h2>
@@ -807,6 +1424,59 @@ def delete_cookie_view(request):
           </div>
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: предпочтения интерфейса, согласия (учитывайте законы и политику приватности).</div>
         </section>
+
+
+          <!-- Serialization Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Расширенная сериализация</h3>
+            <p class="text-slate-300 mb-3">Разные форматы (json, xml, yaml), natural keys, настройка полей для сериализации.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django.core import serializers
+from .models import Book
+
+# JSON сериализация
+json_data = serializers.serialize('json', Book.objects.all())
+json_data = serializers.serialize('json', Book.objects.all(), 
+                                    fields=['title', 'price'])  # Только определённые поля
+
+# XML сериализация
+xml_data = serializers.serialize('xml', Book.objects.all())
+
+# Десериализация
+for obj in serializers.deserialize('json', json_data):
+    instance = obj.object  # Экземпляр модели
+    instance.save()
+
+# Natural keys - человеко-читаемые идентификаторы
+class Author(models.Model):
+    name = models.CharField(max_length=120, unique=True)
+    
+    def natural_key(self):
+        return (self.name,)
+    
+    class Meta:
+        unique_together = [['name']]
+
+class AuthorManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+class Author(models.Model):
+    objects = AuthorManager()
+    # ...
+
+# Сериализация с natural keys
+json_data = serializers.serialize('json', Book.objects.all(), use_natural_foreign_keys=True)
+
+# Команды управления
+# python manage.py dumpdata app.Book --indent 2 --output books.json
+# python manage.py dumpdata --natural-foreign --natural-primary
+# python manage.py loaddata books.json
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: dumpdata/loaddata для резервного копирования, natural keys для переносимых фикстур, fields параметр для частичной сериализации.</div>
+          </div>
 
         <!-- Signals -->
         <section id="signals" class="section-card p-6">
@@ -853,6 +1523,77 @@ def user_groups_changed(sender, instance, action, reverse, model, pk_set, **kwar
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: побочные эффекты, индексация, синхронизация, очистка ресурсов (избегайте тяжёлой логики).</div>
         </section>
 
+
+          <!-- Utils Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Дополнительные утилиты</h3>
+            <p class="text-slate-300 mb-3">escape, conditional_escape, format_html, html_safe, json_script, cached_property, classproperty.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django.utils.html import escape, conditional_escape, format_html, html_safe, json_script
+from django.utils.functional import cached_property
+from django.utils.text import slugify
+
+# Экранирование HTML
+safe_text = escape('<script>alert("xss")</script>')
+# &lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;
+
+# Условное экранирование (если еще не экранировано)
+text = conditional_escape(user_input)
+
+# Безопасное форматирование HTML
+html = format_html('<a href="{}">Link to {}</a>', url, title)
+
+# Пометка строки как безопасной (избегайте для пользовательского ввода!)
+from django.utils.safestring import mark_safe
+html = mark_safe('<b>Bold</b>')
+
+# JSON в шаблоне (безопасно)
+# {% load static %}
+# {{ data|json_script:"my-data" }}
+# Создаст: <script id="my-data" type="application/json">...</script>
+# const data = JSON.parse(document.getElementById('my-data').textContent);
+
+# cached_property - вычисляется один раз
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    
+    @cached_property
+    def expensive_calc(self):
+        # Вычисляется только при первом обращении
+        return self.compute_something()
+
+# Использование
+book = Book.objects.first()
+result = book.expensive_calc  # Вычисляет
+result = book.expensive_calc  # Берёт из кэша
+
+# slugify - преобразование в URL-слаг
+from django.utils.text import slugify
+slug = slugify('Привет Мир!')  # 'privet-mir'
+slug = slugify('Hello World', allow_unicode=True)  # 'hello-world'
+
+# import_string - динамический импорт
+from django.utils.module_loading import import_string
+MyClass = import_string('myapp.models.MyClass')
+instance = MyClass()
+
+# ContentType для generic relations
+from django.contrib.contenttypes.models import ContentType
+from .models import Book
+
+ct = ContentType.objects.get_for_model(Book)
+model_class = ct.model_class()  # Класс модели Book
+
+# apps - получение моделей
+from django.apps import apps
+Book = apps.get_model('app', 'Book')
+all_models = apps.get_app_config('app').get_models()
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: format_html для безопасного HTML, cached_property для дорогих вычислений, slugify для URL, import_string для плагинов, ContentType для generic relations.</div>
+          </div>
+
         <!-- Cache -->
         <section id="cache" class="section-card p-6">
           <h2 class="text-2xl font-bold mb-2 text-sky-400">10. Функции для работы с кэшем</h2>
@@ -884,6 +1625,54 @@ def cached_view(request):
           </div>
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: дорогие вычисления, часто запрашиваемые страницы; обязательно выбирайте корректный backend и ключи.</div>
         </section>
+
+
+          <!-- Cache Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Расширенные методы кэша</h3>
+            <p class="text-slate-300 mb-3">add, get_or_set, set_many, get_many, delete_many, incr, decr, touch для точного контроля кэширования.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django.core.cache import cache
+
+# add - установить только если не существует
+cache.add('key', 'value', timeout=300)  # False если уже есть
+
+# get_or_set - получить или установить
+value = cache.get_or_set('key', lambda: expensive_calc(), timeout=600)
+
+# Массовые операции
+cache.set_many({'a': 1, 'b': 2, 'c': 3}, timeout=300)
+values = cache.get_many(['a', 'b', 'c'])  # {'a': 1, 'b': 2, 'c': 3}
+cache.delete_many(['a', 'b'])
+
+# Инкремент/декремент (для счётчиков)
+cache.set('counter', 0)
+cache.incr('counter')  # 1
+cache.incr('counter', delta=5)  # 6
+cache.decr('counter')  # 5
+
+# touch - обновить TTL без изменения значения
+cache.touch('key', timeout=900)
+
+# Декораторы
+from django.views.decorators.cache import cache_page, never_cache, cache_control
+
+@cache_page(60 * 15)  # 15 минут
+def my_view(request):
+    ...
+
+@never_cache
+def always_fresh(request):
+    ...
+
+@cache_control(private=True, max_age=3600)
+def controlled(request):
+    ...
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: get_or_set для ленивого вычисления, set_many/get_many для множественных ключей, incr/decr для счётчиков без race conditions, touch для продления TTL.</div>
+          </div>
 
         <!-- Logging -->
         <section id="logging" class="section-card p-6">
@@ -1014,6 +1803,55 @@ class Migration(migrations.Migration):
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: миграция данных, заполнение справочников, исправление значений.</div>
         </section>
 
+
+          <!-- Migrations Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Расширенные операции миграций</h3>
+            <p class="text-slate-300 mb-3">RunSQL, CreateModel, AddField, RemoveField, AlterField, RenameModel, RenameField, AddIndex, RemoveIndex, AddConstraint, RemoveConstraint.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django.db import migrations, models
+
+# RunPython для миграции данных
+def forwards(apps, schema_editor):
+    Book = apps.get_model('app', 'Book')
+    for book in Book.objects.filter(stock__lt=0):
+        book.stock = 0
+        book.save()
+
+def backwards(apps, schema_editor):
+    pass
+
+class Migration(migrations.Migration):
+    dependencies = [('app', '0001_initial')]
+    operations = [
+        migrations.RunPython(forwards, backwards),
+    ]
+
+# RunSQL для сырого SQL
+class Migration(migrations.Migration):
+    operations = [
+        migrations.RunSQL(
+            "CREATE INDEX idx_title ON app_book (title)",
+            reverse_sql="DROP INDEX idx_title"
+        ),
+    ]
+
+# Операции со схемой
+operations = [
+    migrations.AddField('Book', 'rating', models.IntegerField(default=0)),
+    migrations.RemoveField('Book', 'old_field'),
+    migrations.AlterField('Book', 'price', models.DecimalField(max_digits=12, decimal_places=2)),
+    migrations.RenameField('Book', 'old_name', 'new_name'),
+    migrations.RenameModel('OldName', 'NewName'),
+    migrations.AddIndex('Book', models.Index(fields=['title', 'author'], name='idx_book_title_author')),
+    migrations.AddConstraint('Book', models.CheckConstraint(check=models.Q(price__gte=0), name='price_positive')),
+]
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: RunPython для миграции данных, RunSQL для специфичных для БД операций, операции со схемой для изменения структуры таблиц.</div>
+          </div>
+
         <!-- Admin -->
         <section id="admin" class="section-card p-6">
           <h2 class="text-2xl font-bold mb-2 text-sky-400">15. Функции для работы с Admin панелью</h2>
@@ -1048,6 +1886,60 @@ class OrderAdmin(admin.ModelAdmin):
           </div>
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: быстрая модерация данных, поиск/фильтрация, групповое редактирование через actions.</div>
         </section>
+
+
+          <!-- Admin Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Расширенные возможности Admin</h3>
+            <p class="text-slate-300 mb-3">list_editable, ordering, date_hierarchy, fieldsets, get_queryset, formfield_overrides для полного контроля админки.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django.contrib import admin
+from .models import Book
+
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'author', 'price', 'stock', 'published_at')
+    list_filter = ('author', 'category', 'published_at')
+    search_fields = ('title', 'author__name')
+    list_editable = ('price', 'stock')  # Редактировать прямо в списке
+    ordering = ('-published_at', 'title')
+    date_hierarchy = 'published_at'  # Навигация по датам
+    list_per_page = 50
+    
+    # Группировка полей в форме
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('title', 'author', 'category')
+        }),
+        ('Цены и склад', {
+            'fields': ('price', 'stock'),
+            'classes': ('collapse',)  # Сворачиваемая секция
+        }),
+    )
+    
+    # Фильтрация QuerySet
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if not request.user.is_superuser:
+            qs = qs.filter(author__is_active=True)
+        return qs
+    
+    # Кастомизация полей формы
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea(attrs={'rows': 4, 'cols': 60})},
+    }
+    
+    # Кастомные действия
+    @admin.action(description='Снизить цену на 10%')
+    def discount_10(self, request, queryset):
+        queryset.update(price=models.F('price') * 0.9)
+    
+    actions = [discount_10]
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: list_editable для быстрого редактирования, fieldsets для структурирования формы, get_queryset для фильтрации данных по пользователю, actions для массовых операций.</div>
+          </div>
 
         <!-- i18n -->
         <section id="i18n" class="section-card p-6">
@@ -1095,6 +1987,56 @@ upcoming = Event.objects.filter(start_date__gte=timezone.now().date())
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: таймзоны-aware время, автоматические метки создания/обновления.</div>
         </section>
 
+
+          <!-- Time Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Расширенная работа с временем</h3>
+            <p class="text-slate-300 mb-3">timezone.localtime, make_aware, make_naive, is_aware, is_naive для корректной работы с часовыми поясами.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django.utils import timezone
+from datetime import datetime, timedelta
+import pytz
+
+# Текущее время (timezone-aware)
+now = timezone.now()
+
+# Локальное время для текущего timezone
+local_now = timezone.localtime(now)
+
+# Конвертация naive <-> aware
+naive_dt = datetime(2024, 1, 1, 12, 0)
+aware_dt = timezone.make_aware(naive_dt, timezone=pytz.UTC)
+
+naive_again = timezone.make_naive(aware_dt, timezone=pytz.UTC)
+
+# Проверка
+timezone.is_aware(aware_dt)  # True
+timezone.is_naive(naive_dt)  # True
+
+# Работа с timedelta
+tomorrow = now + timedelta(days=1)
+next_week = now + timedelta(weeks=1)
+hour_ago = now - timedelta(hours=1)
+
+# В моделях
+from django.db import models
+
+class Event(models.Model):
+    name = models.CharField(max_length=120)
+    created_at = models.DateTimeField(auto_now_add=True)  # Только при создании
+    updated_at = models.DateTimeField(auto_now=True)      # При каждом save()
+    start_date = models.DateField()
+    start_time = models.TimeField()
+
+# Использование
+upcoming = Event.objects.filter(start_date__gte=timezone.now().date())
+recent = Event.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: timezone.now() вместо datetime.now() для timezone-aware времени, make_aware для конвертации внешних данных, localtime для отображения в локальном часовом поясе пользователя.</div>
+          </div>
+
         <!-- Testing -->
         <section id="testing" class="section-card p-6">
           <h2 class="text-2xl font-bold mb-2 text-sky-400">18. Функции для тестирования</h2>
@@ -1127,6 +2069,67 @@ class ViewsTest(TestCase):
           </div>
           <div class="mt-2 text-slate-300 text-sm">Когда использовать: покрытие вьюх, моделей и API; override_settings для контроля окружения.</div>
         </section>
+
+
+          <!-- Testing Advanced -->
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Расширенное тестирование</h3>
+            <p class="text-slate-300 mb-3">TransactionTestCase, SimpleTestCase, assertContains, assertRedirects, setUpTestData для эффективных тестов.</p>
+            <div class="code-block relative bg-slate-900/50 border border-slate-800 rounded-lg">
+              <button class="copy-btn absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded">Копировать</button>
+              <pre><code class="language-python">from django.test import TestCase, TransactionTestCase, SimpleTestCase, Client, override_settings
+from django.urls import reverse
+from .models import Book, Author
+
+class BookTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Вызывается один раз для всех тестов (быстрее)
+        cls.author = Author.objects.create(name='Test Author')
+        cls.book = Book.objects.create(title='Test Book', author=cls.author, price=10, stock=5)
+    
+    def setUp(self):
+        # Вызывается перед каждым тестом
+        self.client = Client()
+    
+    def test_book_list(self):
+        response = self.client.get(reverse('book-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Book')
+        self.assertNotContains(response, 'Should not be here')
+    
+    def test_redirect(self):
+        response = self.client.get(reverse('old-url'))
+        self.assertRedirects(response, reverse('new-url'))
+    
+    def test_queryset(self):
+        books = Book.objects.filter(price__gte=5)
+        self.assertQuerysetEqual(
+            books,
+            [self.book],
+            transform=lambda x: x
+        )
+    
+    @override_settings(DEBUG=True)
+    def test_with_settings(self):
+        from django.conf import settings
+        self.assertTrue(settings.DEBUG)
+
+# TransactionTestCase - когда нужны реальные транзакции
+class TransactionTest(TransactionTestCase):
+    def test_transaction(self):
+        # Тесты с реальными транзакциями БД
+        ...
+
+# SimpleTestCase - без доступа к БД (быстрее)
+class SimpleTest(SimpleTestCase):
+    def test_homepage(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+</code></pre>
+            </div>
+            <div class="mt-2 text-slate-300 text-sm">Когда использовать: setUpTestData для фикстур (быстрее setUp), assertContains/assertRedirects для тестирования вьюх, TransactionTestCase для тестов с транзакциями, SimpleTestCase для тестов без БД.</div>
+          </div>
 
         <!-- Serialization -->
         <section id="serialization" class="section-card p-6">
